@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorPrimary">@color/cpfuchsia</item>
+        <item name="android:colorPrimaryDark">@color/cpblue</item>
+        <item name="android:navigationBarColor">@color/cpgreen</item>
+        <item name="android:colorEdgeEffect">@color/cpblue</item>
+        <item name="android:textColorPrimary">@color/cpgreen</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+
+    <style name="buttons" parent="android:Widget.Material.Button">
+        <item name="android:textColor">@color/cpgreen</item>
+        <item name="android:background">@xml/round_corners</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="preferenceScreen" parent="AppTheme">
+    </style>
+
+</resources>

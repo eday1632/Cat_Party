@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cat Party</string>
+    <string name="swipe_share">Swipe up to share</string>
+    <string name="swipe_save">Swipe down to save</string>
+    <string name="swipe_delete">Swipe down to remove</string>
+    <string name="tap_select">Tap image to select</string>
+    <string name="bounced">Kicked out of VIP!</string>
+    <string name="saved">Saved to VIP Section</string>
+    <string name="clear_vips">Erase saved videos</string>
+    <string name="thats_okay">Erase</string>
+    <string name="select">Select</string>
+    <string name="go_back">Cancel</string>
+    <string name="legal">Legal: </string>
+    <string name="legal_detail">Blah blah blah, copyright this, trademark that</string>
+    <string name="donate">Donate?</string>
+    <string name="vips_cleared">VIP guests removed</string>
+    <string name="delete_vips">You will lose all saved GIFs.</string>
+    <string name="thank_you">Thank you for your donation!</string>
+    <string name="restart">Cat Party will now update and restart.</string>
+    <string name="weak_internet">Weak internet connection</string>
+    <string name="action_settings">Settings</string>
+    <string name="pref_background">cat_party_background_image</string>
+    <string name="set_background">Set background</string>
+    <string name="thanks">Special thanks:</string>
+    <string name="special_thanks">Cat Party could not have become what it is without the following: gifs from Giphy, purpose from Panthera, music from Frisky Dingo, design from Lizzy, product advice from Henry, business advice from Beau, code from Shafeeq, more code from the Android Open Source Project, fancy progress spinners from Android Arsenal, coursework from the Yale School of Management and Department of Computer Science, and the support and patience of many friends. Thanks!</string>
+    <string name="panthera">www.panthera.org</string>
+    <string name="support">support@appawareinc.org</string>
+    <string name="ask_party">How\'s the Party?</string>
+    <string name="okay">OK!</string>
+    <string name="about_cp">About Cat Party:</string>
+    <string name="about">About us</string>
+    <string name="about_dev">About the developer:</string>
+    <string name="about_aai">App Aware Inc. is a USA, Delaware registered not-for-profit corporation. We partner with other not-for-profit organizations to make apps that raise awareness and money for their cause. Questions, suggestions, or inquiries can be sent to:</string>
+    <string name="not_now">Not now</string>
+    <string name="no">Never</string>
+    <string name="rate_ask">Let us know what you think!  Thank you for your time.</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="title_activity_two_rooms">\tCat Party</string>
+    <string name="title_section1">Tonight\'s Guests</string>
+    <string name="trackingID">UA-63749420-1</string>
+    <string name="title_section2">VIP Section</string>
+    <string name="about_cat_party">Cat Party is a not-for-profit app made for entertainment.
+        Net proceeds from in-app donations will go directly to Panthera, the leading conservation
+    group for endangered cat species around the globe. Learn more about Panthera at:</string>
+    <string name="background">Choose your background</string>
+    <string name="share">Share</string>
+
+    <!-- Exception -->
+    <string name="exceptionTabName">Exception</string>
+    <string name="isFatal">Fatal</string>
+    <string name="exceptionLocation">Exception Location (file name and line number)</string>
+    <string name="exceptionMethod">Exception Method</string>
+    <string name="exceptionType">Exception Type</string>
+    <string name="exceptionTypeHint">ExceptionType</string>
+    <string name="exceptionMethodHint">methodName</string>
+    <string name="exceptionLocationHint">fileName:123456</string>
+    <string name="exceptionTrack">Track Exception</string>
+
+</resources>

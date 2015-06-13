@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+
+    <color name="cpblue">#00bfec</color>
+    <color name="cpgreen">#33ec00</color>
+    <color name="cpfuchsia">#ec00bf</color>
+
+    <color name="cpbluelight">#7fffff</color>
+    <color name="cpgreenlight">#b2ff7f</color>
+    <color name="cpfuchsialight">#ff7fff</color>
+
+    <color name="cpbluedark">#0073a0</color>
+    <color name="cpgreendark">#00a000</color>
+    <color name="cpfuchsiadark">#a00073</color>
+
+    <color name="cpfuchsia_ripple">#c5009f</color>
+
+</resources>

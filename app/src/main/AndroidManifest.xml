@@ -1,0 +1,90 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+package="www.appawareinc.org.catparty"
+android:installLocation="auto"
+    >
+
+<compatible-screens>
+    <!-- we only support normal to xlarge and hdpi or greater -->
+    <screen android:screenDensity="hdpi" android:screenSize="normal"/>
+    <screen android:screenDensity="xhdpi" android:screenSize="normal"/>
+
+    <screen android:screenDensity="hdpi" android:screenSize="large"/>
+    <screen android:screenDensity="xhdpi" android:screenSize="large"/>
+
+    <screen android:screenDensity="hdpi" android:screenSize="xlarge"/>
+    <screen android:screenDensity="xhdpi" android:screenSize="xlarge"/>
+</compatible-screens>
+
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="com.android.vending.BILLING" />
+<uses-permission android:name="android.permission.CLEAR_APP_CACHE"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+<application
+    android:name="analytics.AnalyticsTool"
+    android:allowBackup="true"
+    android:label="@string/app_name"
+    android:icon="@mipmap/launcher_icon"
+    android:largeHeap="true"
+    android:hardwareAccelerated="true"
+    android:theme="@style/AppTheme" >
+    <meta-data android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+    <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+        android:enabled="true">
+        <intent-filter>
+            <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+        </intent-filter>
+    </receiver>
+    <service android:name="com.google.android.gms.analytics.AnalyticsService"
+        android:enabled="true"
+        android:exported="false"/>
+    <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="com.android.vending.INSTALL_REFERRER" />
+        </intent-filter>
+    </receiver>
+    <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+    <activity
+        android:name="www.appawareinc.org.catparty.Splash"
+        android:label="@string/app_name"
+        android:screenOrientation="portrait">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
+    <activity
+        android:name="www.appawareinc.org.catparty.TwoRooms"
+        android:screenOrientation="portrait"
+        >
+        <intent-filter>
+            <action android:name="www.appawareinc.org.catparty.TWOROOMS" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+    </activity>
+    <activity android:name=".ChooseBackground"
+        android:screenOrientation="portrait">
+        <intent-filter>
+            <action android:name="www.appawareinc.org.catparty.CHOOSEBACKGROUND" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+    </activity>
+    <activity
+        android:name="www.appawareinc.org.catparty.AboutCatParty"
+        android:screenOrientation="portrait"
+        android:label="@string/about_cat_party" >
+        <intent-filter>
+            <action android:name="www.appawareinc.org.catparty.ABOUTCATPARTY" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+    </activity>
+</application>
+
+</manifest>

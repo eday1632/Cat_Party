@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="image">
+        <item>Black Fur</item>
+        <item>Orange Fur</item>
+        <item>Spotted Fur</item>
+        <item>Mao Yi - Cats in the Garden</item>
+        <item>Marguerite Gérard - The Cat\'s Lunch</item>
+        <item>Beach Party</item>
+        <item>Burning Man</item>
+        <item>Carnival</item>
+        <item>Chinese New Year</item>
+        <item>Club</item>
+        <item>Eid al-Fitr</item>
+        <item>Songkran</item>
+        <item>Tea Party</item>
+    </string-array>
+
+    <string-array name="backgroundImage">
+        <item>black_fur</item>
+        <item>orange_fur</item>
+        <item>gray_fur</item>
+        <item>mao</item>
+        <item>lunch</item>
+        <item>beach</item>
+        <item>burning_man</item>
+        <item>carnival</item>
+        <item>chinese_ny</item>
+        <item>club</item>
+        <item>eid</item>
+        <item>songkran</item>
+        <item>tea_party</item>
+
+    </string-array>
+</resources>

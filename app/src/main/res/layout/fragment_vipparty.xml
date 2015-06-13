@@ -1,0 +1,80 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:context="www.appawareinc.org.catparty.VIPParty"
+    android:id="@+id/container">
+
+    <www.appawareinc.org.catparty.SnappyRecyclerView
+        android:id="@+id/vip_recycler_view"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:background="@drawable/poweredby_giphy"
+        android:layout_width="100dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="right|top" />
+
+    <ImageView
+        android:background="@drawable/panthera_logo"
+        android:layout_width="70dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="left|top" />
+
+    <ImageView
+        android:id="@+id/demoPaw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cat_paw_up"
+        android:visibility="gone"
+        android:layout_gravity="left|center_vertical" />
+
+    <TextView
+        android:id="@+id/swipeDown"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:padding="4dp"
+        android:layout_marginBottom="72dp"
+        android:visibility="gone"
+        android:text="@string/swipe_delete"
+        android:textColor="@color/cpgreen"
+        android:gravity="center"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal|bottom" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:orientation="vertical">
+
+        <SeekBar
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:paddingBottom="24dp"
+            android:progressDrawable="@drawable/custom_seekbar"
+            android:thumb="@drawable/cat_thumb"
+            android:layout_gravity="center_horizontal|bottom"
+            android:indeterminate="false" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/vip_counter"
+        android:layout_width="100dp"
+        android:gravity="right|bottom"
+        android:layout_height="30dp"
+        android:padding="4dp"
+        android:textColor="@color/cpgreen"
+        android:textStyle="italic"
+        android:layout_gravity="right|bottom" />
+
+</FrameLayout>
