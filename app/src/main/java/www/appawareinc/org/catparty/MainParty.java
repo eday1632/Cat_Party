@@ -25,6 +25,8 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 import java.util.Random;
 
@@ -37,21 +39,18 @@ public class MainParty extends Fragment {
 
     public static SnappyRecyclerView recyclerView;
     public static ViewHolderAdapter mainPartyAdapter;
-    public static String background;
     public static CircleProgressBar progressBar;
     private OnFragmentInteractionListener mListener;
     private boolean confirmSave = true;
     private View rootView;
     private static Context context;
     private boolean firstTime = true;
-    private static ImageView catPaw;
     private static TextView swipeUp;
     private static TextView swipeDown;
-    private static Animation animationDown;
-    private static Animation animationFadeInOut;
     private static NetworkReceiver receiver;
     private static List<String> savedGifs;
     private static int returnPosition = 0;
+    public static boolean isActive = false;
 
     /*Method automatically generated when class was created in Android Studio. Functions as a constructor*/
     public static MainParty newInstance(Context mContext) {
@@ -59,6 +58,8 @@ public class MainParty extends Fragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         context = mContext;
+        Storage storage = new Storage(context);
+        savedGifs = storage.accessVIPs();
 
         return fragment;
     }
@@ -93,9 +94,6 @@ public class MainParty extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_main_party, container, false);
 
         Activity activity = getActivity();
-
-        Storage storage = new Storage(context);
-        savedGifs = storage.accessVIPs();
 
         mainPartyAdapter = new ViewHolderAdapter(context, activity);
 
@@ -218,23 +216,18 @@ public class MainParty extends Fragment {
         receiver = new NetworkReceiver(getActivity(), context);
         context.registerReceiver(receiver, filter);
 
+        isActive = true;
         SharedPreferences prefs = context.getSharedPreferences("instructions", 0);
-        SharedPreferences.Editor editor = prefs.edit();
         if (prefs.getBoolean("dontshowagain", false)) { return; } //comment out for testing
         //else
-            catPaw = (ImageView) rootView.findViewById(R.id.demoPaw);
 
             swipeUp = (TextView) rootView.findViewById(R.id.swipeUp);
             swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
+            Animation fadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
+            fadeInOut.setAnimationListener(new MyAnimationListener());
+            swipeUp.startAnimation(fadeInOut);
 
-            Animation animationUp = AnimationUtils.loadAnimation(context, R.anim.paw_swipes_up);
-            animationUp.setAnimationListener(new MyAnimationListener());
-            animationDown = AnimationUtils.loadAnimation(context, R.anim.paw_swipes_down);
-            animationDown.setAnimationListener(new MyOtherAnimationListener());
-            animationFadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
-
-            catPaw.startAnimation(animationUp);
-            swipeUp.startAnimation(animationFadeInOut);
+            SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("dontshowagain", true);
             editor.apply();
     }
@@ -253,7 +246,6 @@ public class MainParty extends Fragment {
             recyclerView.removeAllViewsInLayout();
         }
     }
-
 
 
     /*Method automatically created by Android Studio. Relates to the onButtonPressed method above, but
@@ -339,14 +331,15 @@ public class MainParty extends Fragment {
         @Override
         public void onAnimationStart(Animation animation) {
             swipeUp.setVisibility(View.INVISIBLE);
-            catPaw.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
             swipeUp.clearAnimation();
-            catPaw.startAnimation(animationDown);
-            swipeDown.startAnimation(animationFadeInOut);
+            swipeUp.setVisibility(View.GONE);
+            Animation fadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
+            fadeInOut.setAnimationListener(new MyOtherAnimationListener());
+            swipeDown.startAnimation(fadeInOut);
         }
 
         @Override
@@ -364,8 +357,8 @@ public class MainParty extends Fragment {
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            catPaw.clearAnimation();
             swipeDown.clearAnimation();
+            swipeDown.setVisibility(View.GONE);
         }
 
         @Override

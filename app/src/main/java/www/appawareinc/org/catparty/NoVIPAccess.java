@@ -3,6 +3,7 @@ package www.appawareinc.org.catparty;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -15,10 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import inappbilling.IabResult;
 
@@ -39,12 +42,12 @@ public class NoVIPAccess extends Fragment {
         return fragment;
     }
 
-    public static void disappearViews(){
+    public static void hideViews(){
         imageView.setVisibility(View.INVISIBLE);
         purchase.setVisibility(View.INVISIBLE);
     }
 
-    public static void reappearViews(){
+    public static void showViews(){
         imageView.setVisibility(View.VISIBLE);
         purchase.setVisibility(View.VISIBLE);
     }
@@ -73,24 +76,24 @@ public class NoVIPAccess extends Fragment {
             public void onClick(View v) {
                 restartForVIPAccess();
                 //onUpgradeAppButtonClicked();
-//                editor.putInt("granted", 2);//1 for testing, 2 for production
-//                editor.commit();
-//                final Dialog dialog = new Dialog(context);
-//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                dialog.setContentView(R.layout.restart_dialog);
-//                dialog.getWindow().setLayout(Math.round(280 * TwoRooms.densityMultiple),
-//                        Math.round(244 * TwoRooms.densityMultiple)); //width, height
-//
-//                Button yesDelete = (Button) dialog.findViewById(R.id.buttonOkay);
-//                yesDelete.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        restartForVIPAccess();
-//                        dialog.dismiss();
-//                    }
-//                });
-//
-//                dialog.show();
+                editor.putInt("granted", 2);//1 for testing, 2 for production
+                editor.commit();
+                final Dialog dialog = new Dialog(context);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.restart_dialog);
+                dialog.getWindow().setLayout(Math.round(280 * TwoRooms.densityMultiple),
+                        Math.round(244 * TwoRooms.densityMultiple)); //width, height
+
+                Button yesDelete = (Button) dialog.findViewById(R.id.buttonOkay);
+                yesDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        restartForVIPAccess();
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
             }
         });
 
@@ -117,15 +120,15 @@ public class NoVIPAccess extends Fragment {
     }
 
     public void restartForVIPAccess(){
-        mHelper.launchPurchaseFlow((Activity)context, ITEM_SKU, 10001, mPurchaseFinishedListener, "mypurchasetoken");
-//        Intent intent = context.getPackageManager()
-//                .getLaunchIntentForPackage( context.getPackageName() );
-//
-//        PendingIntent pending = PendingIntent.getActivity(
-//                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-//        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
-//        System.exit(2);
+//        mHelper.launchPurchaseFlow((Activity)context, ITEM_SKU, 10001, mPurchaseFinishedListener, "mypurchasetoken");
+        Intent intent = context.getPackageManager()
+                .getLaunchIntentForPackage( context.getPackageName() );
+
+        PendingIntent pending = PendingIntent.getActivity(
+                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
+        System.exit(2);
     }
 
     public void consumeItem() {

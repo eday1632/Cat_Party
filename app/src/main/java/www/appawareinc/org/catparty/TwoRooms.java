@@ -49,8 +49,8 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     private boolean notFirst = false;
     private static boolean notYetExecuted = true;
     private static boolean mainPartyWasLastVisible = true;
-    SharedPreferences prefs;
-    SharedPreferences instructions;
+    private SharedPreferences prefs;
+    private SharedPreferences instructions;
     public static float densityMultiple;
     public static int screenWidthDp;
     public static int screenHeightDp;
@@ -87,7 +87,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                 mViewPager.setCurrentItem(position, false);
                 notYetExecuted = true;
 
-                if (position == 0 && VIPParty.recyclerView != null) {
+                if (position == 0 && VIPParty.isActive) {
                     VIPParty.dontPlayGifsWhenOffscreen();
                 }
 
@@ -115,6 +115,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
 
                 if (prefs.getInt("granted", 0) == 1 && position == 1) {
                     NoVIPAccess.catsShunYou();
+                    Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_LONG).show();
                 } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
                     VIPParty.showInitialInstruction();
                 }
@@ -141,7 +142,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
 
                 if (position == 0) {
                     MainParty.playGifsWhenVisible();
-                } else if (position == 1 && VIPParty.recyclerView != null){
+                } else if (position == 1 && VIPParty.isActive){
                     VIPParty.playGifsWhenVisible();
                 }
             }
@@ -248,9 +249,9 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     protected void onResume() {
         super.onResume();
 
-        if(mainPartyWasLastVisible && MainParty.recyclerView != null){
+        if(mainPartyWasLastVisible && MainParty.isActive){
             MainParty.playGifsWhenVisible();
-        } else if (!mainPartyWasLastVisible && VIPParty.recyclerView != null){
+        } else if (!mainPartyWasLastVisible && VIPParty.isActive){
             VIPParty.playGifsWhenVisible();
         }
 
@@ -346,12 +347,12 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
 
             if(position == 0 && notYetExecuted){
                 mainPartyWasLastVisible = true;
-                if(VIPParty.recyclerView != null) VIPParty.dontPlayGifsWhenOffscreen();
-                if(MainParty.recyclerView != null) MainParty.playGifsWhenVisible();
+                if(VIPParty.isActive) VIPParty.dontPlayGifsWhenOffscreen();
+                if(MainParty.isActive) MainParty.playGifsWhenVisible();
             } else if (position == 1 && notYetExecuted) {
                 mainPartyWasLastVisible = false;
                 MainParty.dontPlayGifsWhenOffscreen();
-                if(VIPParty.recyclerView != null) VIPParty.playGifsWhenVisible();
+                if(VIPParty.isActive) VIPParty.playGifsWhenVisible();
             }
             notYetExecuted = false;
         }

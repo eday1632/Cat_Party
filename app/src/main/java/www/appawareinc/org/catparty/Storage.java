@@ -60,11 +60,10 @@ public class Storage {
         return seenVideos;
     }
 
-    public void saveOffset(int offset) {
+    public void increaseOffset() {
         try {
-            int previous = accessOffset();
-            offset += previous;
-            String savedNumber = String.valueOf(offset);
+            int previous = accessOffset() + 20; //add the number of gifs we ask Giphy to return for each query
+            String savedNumber = String.valueOf(previous);
             FileOutputStream fOut = context.openFileOutput("starting_number.txt",
                     Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fOut);

@@ -12,7 +12,7 @@ import www.appawareinc.org.catparty.R;
 public class AnalyticsTool extends Application {
 
     // The following line should be changed to include the correct property id.
-    private static final String PROPERTY_ID = "UA-63749420-1";
+    private static final String PROPERTY_ID = "UA-63749420-2";
 
     public enum TrackerName {
         APP_TRACKER // Tracker used only in this app.

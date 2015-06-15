@@ -9,11 +9,11 @@ public class BuildKey{
     /*key built by concatenating several strings because it is a poor security practice to
     * have the key hard coded as one string */
     public String getKey(){
-        String first = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjZDmpMgGgPGaxZ1SZU";
-        String second = "wsHq+pB9u95C9SnvcWzoi4Z4wLb8EvVgNLl4/+SNguYNMvpQqOEK/T0oQtOWNpI9413Gq4RPcf5";
-        String third = "j4W57tfIDA78s04VA4xTPZLiybQJlHbUHOSKNZLHN7k5uabWz4G+KLUMC6kciFSsZb2e9IgPTWnkA2YueVWf";
-        String fourth = "hDH+CS6BVL+YQQJq9OTeX+j1USSmgHZHd6IO0rHzxUM8Gv2UzgGKLmpitKeUlemtkigGRRs6ss91sSJJ8S1cf";
-        String fifth = "ISxkKrSga45A54nZc10LCO9RyLm6zyLuXa2fJAeUprXx6QvXjUX6oGutDJuaEiiCKJFmS3FBo1aP/sPwIDAQAB";
+        String first = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqc/Zr0EAstvPEQ3RCfPNEz5ho1+FncedWvz";
+        String second = "/9VKy4mQkpuSdV9SHgFAYe8X3PkP7ngbpbQxdLAsTfuoUdRqwd9RlvA2BhsAxmgrfCgKSfnp9v";
+        String third = "+swuWa0suDPEY0hMS2SOvdgTZRaXP8RqJz0c7qQPbT5i+lheYAu1HJ6FAQvCWOeA6eV6C0qkO0CKSscBXZiKYhpKem3mumiac";
+        String fourth = "+yba0Bbea1wz49yGIhCVyGAWBySbAYv1a3TTE2VoNgJArC7hZap9NF1IDezIaLBgblC2LQizooUlmZxTcQPp6YRT8DGmRl";
+        String fifth = "+V6SFFalAxAYM2Uc3Fa52LjMUqNBxKDzu7vG1grBQIDAQAB";
         String last;
 
 

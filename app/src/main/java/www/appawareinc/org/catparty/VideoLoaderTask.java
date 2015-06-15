@@ -32,11 +32,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
 
     private Context context;
     private Activity activity;
-    private Storage storage;
     private HashSet<String> seenVideos;
-    private int offset;
-    private ArrayList<GifItem> URLs = new ArrayList<>();
-
 
     public VideoLoaderTask(Context context, Activity activity) {
         this.context = context;
@@ -46,7 +42,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        storage = new Storage(context);
+        Storage storage = new Storage(context);
         seenVideos = storage.accessVideos();
     }
 
@@ -63,56 +59,69 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
     @Override
     protected void onPostExecute(ArrayList<GifItem> gifs) {
         super.onPostExecute(gifs);
-        storage.saveOffset(offset);
-        storage.saveVideos(seenVideos);
+
         if(gifs != null) {
+            Storage storage = new Storage(context);
+            storage.increaseOffset();
+            storage.saveVideos(seenVideos);
             MainParty.mainPartyAdapter.setGifs(gifs);
             MainParty.progressBar.setVisibility(View.GONE);
-            logAnalyticsEvent();
+            logAnalyticsEvent(gifs.size());
         } else {
-            Toast.makeText(context, R.string.weak_internet, Toast.LENGTH_LONG).show();
-            BuildURL buildURL = new BuildURL(context);
-            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
+            Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
+//            BuildURL buildURL = new BuildURL(context);
+////            doInBackground(buildURL.getURL());
+//            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
         }
     }
 
-    private void logAnalyticsEvent(){
+    private void logAnalyticsEvent(int size){
         Tracker t = ((AnalyticsTool) activity.getApplication()).getTracker(
                 AnalyticsTool.TrackerName.APP_TRACKER);
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("VideoLoaderTask")
                     .setAction("Retrieved gifs")
-                    .setValue(URLs.size())
+                    .setValue(size)
                     .build());
     }
 
     private String getUrl(String address) throws IOException {
-        URL url = new URL(address);
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        String output = "";
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+        try {
+            URL url = new URL(address);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
-        String output = new String();
-        for (String line = new String(); line != null; line = reader.readLine()) {
-            output = output + line + "\n";
+            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+            for (String line = ""; line != null; line = reader.readLine()) {
+                output = output + line + "\n";
+            }
+            urlConnection.disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            output = null;
         }
-
-        urlConnection.disconnect();
-
         return output;
     }
 
-    private ArrayList<GifItem> getGifs(String url) {
+    private ArrayList<GifItem> getGifs(String output) {
+        ArrayList<GifItem> URLs = new ArrayList<>();
         JSONArray returnedVideos;
 
         try {
-            String rawResponse = getUrl(url);
+            String rawResponse = getUrl(output);
+            if(rawResponse == null){
+                return URLs = null; //exit the process here if we didn't get anything back from Giphy
+            }
             JSONParser parser = new JSONParser();
             JSONObject response = null;
             try {
                 response = (JSONObject) parser.parse(rawResponse);
             } catch (ParseException pe) {
                 pe.printStackTrace();
+                return URLs = null; //also exit if we can't parse what was returned
             }
 
             returnedVideos = (JSONArray) response.get("data");
@@ -196,7 +205,6 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
 
                 URLs.add(item);
                 seenVideos.add(Oid);
-                offset++;
             }
         } catch (IOException e) {
             e.printStackTrace();

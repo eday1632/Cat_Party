@@ -36,15 +36,14 @@ public class ChooseBackground extends Activity {
                 getResources().getStringArray(R.array.backgroundImage)));
 
         SharedPreferences prefs = getSharedPreferences("tap_select", 0);
-        SharedPreferences.Editor editor = prefs.edit();
         if (prefs.getBoolean("dontshowagain", false)) { return; } //comment out for testing
         //else
             tap = (TextView) findViewById(R.id.tap_instruction);
-
             Animation animationFadeInOut = AnimationUtils.loadAnimation(this, R.anim.fade_in_out);
             animationFadeInOut.setAnimationListener(new MyAnimationListener());
-
             tap.startAnimation(animationFadeInOut);
+
+            SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("dontshowagain", true);
             editor.apply();
     }
@@ -149,12 +148,12 @@ public class ChooseBackground extends Activity {
     }
 
 
-    private void logAnalyticsEvent(String action){
+    private void logAnalyticsEvent(String backgroundImage){
         Tracker t = ((AnalyticsTool) getApplication()).getTracker(
                 AnalyticsTool.TrackerName.APP_TRACKER);
         t.send(new HitBuilders.EventBuilder()
                 .setCategory("Background")
-                .setAction(action)
+                .setAction(backgroundImage)
                 .setValue(1)
                 .build());
     }

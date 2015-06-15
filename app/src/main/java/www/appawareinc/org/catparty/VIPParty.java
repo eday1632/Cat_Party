@@ -32,18 +32,17 @@ import analytics.AnalyticsTool;
 public class VIPParty extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    public static SnappyRecyclerView recyclerView;
-    public static TextView vipCounter;
-    public static String background;
-    public static SeekBar seekBar;
+    private static SnappyRecyclerView recyclerView;
+    private static TextView vipCounter;
+    private static SeekBar seekBar;
     private static View rootView;
     private boolean confirmDelete = true;
     private static List<GifItem> gifItems;
     private static Context context;
     private static int returnPosition = 0;
     public static ViewHolderAdapter vipAdapter;
-    private static ImageView catPaw;
     private static TextView swipeDown;
+    public static boolean isActive = false;
 
     public static VIPParty newInstance(Context mContext) {
         VIPParty fragment = new VIPParty();
@@ -159,6 +158,25 @@ public class VIPParty extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        isActive = true;
+    }
+
+    public static void hideViews() {
+        recyclerView.setVisibility(View.INVISIBLE);
+        seekBar.setVisibility(View.INVISIBLE);
+        vipCounter.setVisibility(View.INVISIBLE);
+    }
+
+    public static void showViews(){
+        recyclerView.setVisibility(View.VISIBLE);
+        seekBar.setVisibility(View.VISIBLE);
+        vipCounter.setVisibility(View.VISIBLE);
+    }
+
+
     public static void playGifsWhenVisible(){
         Storage storage = new Storage(context);
         gifItems = gifListRebuilder(storage.accessVIPs());
@@ -226,36 +244,26 @@ public class VIPParty extends Fragment {
     }
 
     public static void showInitialInstruction(){
+        swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
+        Animation animationFadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
+        animationFadeInOut.setAnimationListener(new MyAnimationListener());
+        swipeDown.startAnimation(animationFadeInOut);
+
         SharedPreferences prefs = context.getSharedPreferences("vip_instructions", 0);
         SharedPreferences.Editor editor = prefs.edit();
-
-        Animation animationDown;
-        Animation animationFadeInOut;
-        catPaw = (ImageView) rootView.findViewById(R.id.demoPaw);
-        swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
-
-        animationDown = AnimationUtils.loadAnimation(context, R.anim.paw_swipes_down);
-        animationFadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
-
-        animationFadeInOut.setAnimationListener(new MyAnimationListener());
-        catPaw.startAnimation(animationDown);
-        swipeDown.startAnimation(animationFadeInOut);
         editor.putBoolean("dontshowagain", false);
         editor.apply();
     }
 
-    private static class MyAnimationListener implements Animation.AnimationListener{
+    private static class MyAnimationListener implements Animation.AnimationListener {
 
         @Override
         public void onAnimationStart(Animation animation) {
-            catPaw.setVisibility(View.INVISIBLE);
             swipeDown.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            catPaw.clearAnimation();
-            catPaw.setVisibility(View.GONE);
             swipeDown.clearAnimation();
             swipeDown.setVisibility(View.GONE);
         }

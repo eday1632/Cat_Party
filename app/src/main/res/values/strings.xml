@@ -13,18 +13,19 @@
     <string name="select">Select</string>
     <string name="go_back">Cancel</string>
     <string name="legal">Legal: </string>
-    <string name="legal_detail">Blah blah blah, copyright this, trademark that</string>
+    <string name="legal_detail">While Panthera, Inc. accepts the donations of Cat Party, Panthera in no way endorses or is affiliated with Cat Party or App Aware Inc. \n\nThe following media were taken from their corresponding sources. Each source in no way endorses or is affiliated with Cat Party or App Aware Inc.  \n\nMusic: \n\"Cat Party ringtone\" from Adult Swim\'s Frisky Dingo \n\nImages: \nBlack Fur and Orange Fur - www.photos-public-domain.com \nSpotted Fur and \"About us\" fur - Charles Williams at www.wokay.com/author/charles/ \nBeach Party - www.pichost.me/1369106/ \nBurning Man - Pamela Morgan at http://bit.ly/1Ibnw03 \nCarnival - http://bit.ly/1QVYl64 \nChinese New Year - Calvin Teo on Wikimedia Commons \nClub - Chauvet at www.chauvetdjblog.com/tag/vip-room/ \nEid al-Fitr - Zanneburger at http://bit.ly/1IRZZa6 \nSongkran - JJ Harrison on Wikimedia Commons \nTea Party - CN Photography at http://bit.ly/1C54TbS \nSnarling tiger - Isselee at http://bit.ly/1Qw4f2U \nCat Party logo - www.clipartpanda.com</string>
     <string name="donate">Donate?</string>
     <string name="vips_cleared">VIP guests removed</string>
     <string name="delete_vips">You will lose all saved GIFs.</string>
     <string name="thank_you">Thank you for your donation!</string>
-    <string name="restart">Cat Party will now update and restart.</string>
-    <string name="weak_internet">Weak internet connection</string>
+    <string name="restart">Cat Party will now update and restart</string>
+    <string name="trouble_receiving_gifs">Trouble receiving gifs...</string>
     <string name="action_settings">Settings</string>
     <string name="pref_background">cat_party_background_image</string>
+    <string name="guest_list">\"Guest list only\"</string>
     <string name="set_background">Set background</string>
     <string name="thanks">Special thanks:</string>
-    <string name="special_thanks">Cat Party could not have become what it is without the following: gifs from Giphy, purpose from Panthera, music from Frisky Dingo, design from Lizzy, product advice from Henry, business advice from Beau, code from Shafeeq, more code from the Android Open Source Project, fancy progress spinners from Android Arsenal, coursework from the Yale School of Management and Department of Computer Science, and the support and patience of many friends. Thanks!</string>
+    <string name="special_thanks">Cat Party could not have become what it is without the following: gifs from Giphy, purpose from Panthera, design from Lizzy, product advice from Henry, business advice from Beau, legal advice from Julian, code from Shafeeq, more code from the Android Open Source Project, fancy progress spinners from Android Arsenal, coursework from the Yale School of Management and Department of Computer Science, and the support and patience of many friends. Thanks!</string>
     <string name="panthera">www.panthera.org</string>
     <string name="support">support@appawareinc.org</string>
     <string name="ask_party">How\'s the Party?</string>
@@ -39,23 +40,12 @@
     <string name="no_internet">No internet connection</string>
     <string name="title_activity_two_rooms">\tCat Party</string>
     <string name="title_section1">Tonight\'s Guests</string>
-    <string name="trackingID">UA-63749420-1</string>
+    <string name="trackingID">UA-63749420-2</string>
     <string name="title_section2">VIP Section</string>
     <string name="about_cat_party">Cat Party is a not-for-profit app made for entertainment.
         Net proceeds from in-app donations will go directly to Panthera, the leading conservation
     group for endangered cat species around the globe. Learn more about Panthera at:</string>
     <string name="background">Choose your background</string>
     <string name="share">Share</string>
-
-    <!-- Exception -->
-    <string name="exceptionTabName">Exception</string>
-    <string name="isFatal">Fatal</string>
-    <string name="exceptionLocation">Exception Location (file name and line number)</string>
-    <string name="exceptionMethod">Exception Method</string>
-    <string name="exceptionType">Exception Type</string>
-    <string name="exceptionTypeHint">ExceptionType</string>
-    <string name="exceptionMethodHint">methodName</string>
-    <string name="exceptionLocationHint">fileName:123456</string>
-    <string name="exceptionTrack">Track Exception</string>
 
 </resources>

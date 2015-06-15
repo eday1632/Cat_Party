@@ -39,23 +39,19 @@ public class NetworkReceiver extends BroadcastReceiver {
                 TwoRooms.setBackgroundImage(getResourceID(background), context.getResources());
             }
             MainParty.recyclerView.setVisibility(View.VISIBLE);
-            if(VIPParty.recyclerView != null) {
-                VIPParty.recyclerView.setVisibility(View.VISIBLE);
-                VIPParty.vipCounter.setVisibility(View.VISIBLE);
-                VIPParty.seekBar.setVisibility(View.VISIBLE);
+            if(VIPParty.isActive) {
+                VIPParty.showViews();
             } else {
-                NoVIPAccess.reappearViews();
+                NoVIPAccess.showViews();
             }
 
         } else {
             MainParty.recyclerView.setVisibility(View.INVISIBLE);
             MainParty.progressBar.setVisibility(View.GONE);
-            if(VIPParty.recyclerView != null) {
-                VIPParty.recyclerView.setVisibility(View.INVISIBLE);
-                VIPParty.vipCounter.setVisibility(View.INVISIBLE);
-                VIPParty.seekBar.setVisibility(View.INVISIBLE);
+            if(VIPParty.isActive) {
+                VIPParty.hideViews();
             } else {
-                NoVIPAccess.disappearViews();
+                NoVIPAccess.hideViews();
             }
             theWifiIsReturning = true;
 
