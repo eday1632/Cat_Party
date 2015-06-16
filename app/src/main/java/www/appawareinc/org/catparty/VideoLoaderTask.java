@@ -68,9 +68,9 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             MainParty.hideProgressSpinner();
             logAnalyticsEvent(gifs.size());
         } else {
-            Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
-            BuildURL buildURL = new BuildURL(context);
-            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
+//            Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
+//            BuildURL buildURL = new BuildURL(context);
+//            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
         }
     }
 

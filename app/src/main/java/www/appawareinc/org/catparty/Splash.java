@@ -43,7 +43,7 @@ public class Splash extends Activity {
             //do nothing;
         } else {
             Intent jinglePlayer = new Intent(this, JinglePlayer.class);
-            startService(jinglePlayer);
+//            startService(jinglePlayer);
         }
 
         final View decorView = getWindow().getDecorView();

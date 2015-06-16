@@ -109,125 +109,125 @@ public class NoVIPAccess extends Fragment {
         String pubKey = bk.getKey();
 //        final List additionalSkuList = new LinkedList();
 //        additionalSkuList.add(ITEM_SKU);
-        mHelper = new IabHelper(context, pubKey);
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() { //TODO: comment out when using emulator
-            @Override
-            public void onIabSetupFinished(IabResult result) {
-                if (!result.isSuccess()) {
-                    Log.d("InAppBilling", "In-app Billing setup failed: " +
-                            result);
-                } else {
-                    Log.d("InAppBilling", "In-app Billing is set up OK");
-                    mHelper.queryInventoryAsync(mReceivedInventoryListener);
-                }
-            }
-        });
+//        mHelper = new IabHelper(context, pubKey);
+//        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() { //TODO: comment out when using emulator
+//            @Override
+//            public void onIabSetupFinished(IabResult result) {
+//                if (!result.isSuccess()) {
+//                    Log.d("InAppBilling", "In-app Billing setup failed: " +
+//                            result);
+//                } else {
+//                    Log.d("InAppBilling", "In-app Billing is set up OK");
+//                    mHelper.queryInventoryAsync(mReceivedInventoryListener);
+//                }
+//            }
+//        });
 
         return rootView;
     }
-
-    public void restartForVIPAccess(){
-        mHelper.launchPurchaseFlow((Activity)context, ITEM_SKU, 10001, mPurchaseFinishedListener, "mypurchasetoken");
-//        Intent intent = context.getPackageManager()
-//                .getLaunchIntentForPackage( context.getPackageName() );
 //
-//        PendingIntent pending = PendingIntent.getActivity(
-//                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-//        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
-//        System.exit(2);
-    }
-
-    public void consumeItem() {
-        mHelper.queryInventoryAsync(mReceivedInventoryListener);
-    }
-
-    IabHelper.QueryInventoryFinishedListener mReceivedInventoryListener
-            = new IabHelper.QueryInventoryFinishedListener() {
-        public void onQueryInventoryFinished(IabResult result,
-                                             Inventory inventory) {
-
-            if (result.isFailure()) {
-                // Handle failure
-            } else {
-                Purchase donation = inventory.getPurchase(ITEM_SKU);
-                if (donation != null && verifyDeveloperPayload(donation)) {
-                    mHelper.consumeAsync(inventory.getPurchase(ITEM_SKU),
-                            mConsumeFinishedListener);
-                }
-            }
-        }
-    };
-
-    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
-            new IabHelper.OnConsumeFinishedListener() {
-                public void onConsumeFinished(Purchase purchase,
-                                              IabResult result) {
-
-                    if (result.isSuccess()) {
-                        Intent intent = context.getPackageManager()
-                                .getLaunchIntentForPackage( context.getPackageName() );
-
-                        PendingIntent pending = PendingIntent.getActivity(
-                                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
-                        System.exit(2);
-                    } else {
-                        // handle error
-                    }
-                }
-            };
-
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
-            = new IabHelper.OnIabPurchaseFinishedListener() {
-        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-            if (result.isFailure()) {
-                // Handle error
-                return;
-            }
-            else if (purchase.getSku().equals(ITEM_SKU)) {
-                mHelper.consumeAsync(purchase, mConsumeFinishedListener);
-            }
-        }
-    };
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mHelper != null) mHelper.dispose();
-        mHelper = null;
-    }
-
-    /** Verifies the developer payload of a purchase. */
-    boolean verifyDeveloperPayload(Purchase p) {
-        String payload = p.getDeveloperPayload();
-
-        /*
-         * TODO: verify that the developer payload of the purchase is correct. It will be
-         * the same one that you sent when initiating the purchase.
-         *
-         * WARNING: Locally generating a random string when starting a purchase and
-         * verifying it here might seem like a good approach, but this will fail in the
-         * case where the user purchases an item on one device and then uses your app on
-         * a different device, because on the other device you will not have access to the
-         * random string you originally generated.
-         *
-         * So a good developer payload has these characteristics:
-         *
-         * 1. If two different users purchase an item, the payload is different between them,
-         *    so that one user's purchase can't be replayed to another user.
-         *
-         * 2. The payload must be such that you can verify it even when the app wasn't the
-         *    one who initiated the purchase flow (so that items purchased by the user on
-         *    one device work on other devices owned by the user).
-         *
-         * Using your own server to store and verify developer payloads across app
-         * installations is recommended.
-         */
-
-        return true;
-    }
+//    public void restartForVIPAccess(){
+//        mHelper.launchPurchaseFlow((Activity)context, ITEM_SKU, 10001, mPurchaseFinishedListener, "mypurchasetoken");
+////        Intent intent = context.getPackageManager()
+////                .getLaunchIntentForPackage( context.getPackageName() );
+////
+////        PendingIntent pending = PendingIntent.getActivity(
+////                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+////        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+////        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
+////        System.exit(2);
+//    }
+//
+//    public void consumeItem() {
+//        mHelper.queryInventoryAsync(mReceivedInventoryListener);
+//    }
+//
+//    IabHelper.QueryInventoryFinishedListener mReceivedInventoryListener
+//            = new IabHelper.QueryInventoryFinishedListener() {
+//        public void onQueryInventoryFinished(IabResult result,
+//                                             Inventory inventory) {
+//
+//            if (result.isFailure()) {
+//                // Handle failure
+//            } else {
+//                Purchase donation = inventory.getPurchase(ITEM_SKU);
+//                if (donation != null && verifyDeveloperPayload(donation)) {
+//                    mHelper.consumeAsync(inventory.getPurchase(ITEM_SKU),
+//                            mConsumeFinishedListener);
+//                }
+//            }
+//        }
+//    };
+//
+//    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
+//            new IabHelper.OnConsumeFinishedListener() {
+//                public void onConsumeFinished(Purchase purchase,
+//                                              IabResult result) {
+//
+//                    if (result.isSuccess()) {
+//                        Intent intent = context.getPackageManager()
+//                                .getLaunchIntentForPackage( context.getPackageName() );
+//
+//                        PendingIntent pending = PendingIntent.getActivity(
+//                                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//                        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//                        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
+//                        System.exit(2);
+//                    } else {
+//                        // handle error
+//                    }
+//                }
+//            };
+//
+//    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+//            = new IabHelper.OnIabPurchaseFinishedListener() {
+//        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+//            if (result.isFailure()) {
+//                // Handle error
+//                return;
+//            }
+//            else if (purchase.getSku().equals(ITEM_SKU)) {
+//                mHelper.consumeAsync(purchase, mConsumeFinishedListener);
+//            }
+//        }
+//    };
+//
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        if (mHelper != null) mHelper.dispose();
+//        mHelper = null;
+//    }
+//
+//    /** Verifies the developer payload of a purchase. */
+//    boolean verifyDeveloperPayload(Purchase p) {
+//        String payload = p.getDeveloperPayload();
+//
+//        /*
+//         * TODO: verify that the developer payload of the purchase is correct. It will be
+//         * the same one that you sent when initiating the purchase.
+//         *
+//         * WARNING: Locally generating a random string when starting a purchase and
+//         * verifying it here might seem like a good approach, but this will fail in the
+//         * case where the user purchases an item on one device and then uses your app on
+//         * a different device, because on the other device you will not have access to the
+//         * random string you originally generated.
+//         *
+//         * So a good developer payload has these characteristics:
+//         *
+//         * 1. If two different users purchase an item, the payload is different between them,
+//         *    so that one user's purchase can't be replayed to another user.
+//         *
+//         * 2. The payload must be such that you can verify it even when the app wasn't the
+//         *    one who initiated the purchase flow (so that items purchased by the user on
+//         *    one device work on other devices owned by the user).
+//         *
+//         * Using your own server to store and verify developer payloads across app
+//         * installations is recommended.
+//         */
+//
+//        return true;
+//    }
 
     public static void catsShunYou(){
         ImageView imageView = (ImageView) rootView.findViewById(R.id.bouncer);
