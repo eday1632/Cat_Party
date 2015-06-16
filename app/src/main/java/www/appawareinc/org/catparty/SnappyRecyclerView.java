@@ -54,4 +54,6 @@ public class SnappyRecyclerView extends RecyclerView {
         }
         return true;
     }
+
+
 }

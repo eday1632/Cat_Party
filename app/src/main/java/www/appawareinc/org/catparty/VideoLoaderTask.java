@@ -65,13 +65,12 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             storage.increaseOffset();
             storage.saveVideos(seenVideos);
             MainParty.mainPartyAdapter.setGifs(gifs);
-            MainParty.progressBar.setVisibility(View.GONE);
+            MainParty.hideProgressSpinner();
             logAnalyticsEvent(gifs.size());
         } else {
             Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
-//            BuildURL buildURL = new BuildURL(context);
-////            doInBackground(buildURL.getURL());
-//            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
+            BuildURL buildURL = new BuildURL(context);
+            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
         }
     }
 
@@ -178,7 +177,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
                 double widthH = Integer.parseInt(Hwidth);
                 double areaH = heightH * widthH;
                 int acceptableWidth = TwoRooms.screenWidthDp + Math.round(TwoRooms.screenWidthDp * 0.15f);
-                int acceptableHeight = TwoRooms.screenHeightDp + Math.round(TwoRooms.screenWidthDp * 0.15f);
+                int acceptableHeight = TwoRooms.screenHeightDp + Math.round(TwoRooms.screenHeightDp * 0.15f);
 
                 /*algorithm for choosing the optimal gif: original, fixed height, or fixed width*/
                 if(ratioO < 1.0){
@@ -208,6 +207,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return URLs = null;
         }
         return URLs;
     }

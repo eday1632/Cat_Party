@@ -39,16 +39,12 @@ public class MainParty extends Fragment {
 
     public static SnappyRecyclerView recyclerView;
     public static ViewHolderAdapter mainPartyAdapter;
-    public static CircleProgressBar progressBar;
     private OnFragmentInteractionListener mListener;
     private boolean confirmSave = true;
-    private View rootView;
+    private static View rootView;
     private static Context context;
     private boolean firstTime = true;
-    private static TextView swipeUp;
-    private static TextView swipeDown;
     private static NetworkReceiver receiver;
-    private static List<String> savedGifs;
     private static int returnPosition = 0;
     public static boolean isActive = false;
 
@@ -58,9 +54,6 @@ public class MainParty extends Fragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         context = mContext;
-        Storage storage = new Storage(context);
-        savedGifs = storage.accessVIPs();
-
         return fragment;
     }
 
@@ -153,11 +146,22 @@ public class MainParty extends Fragment {
 
     public static void saveVIPs(GifItem item){
         Storage storage = new Storage(context);
+        List<String> savedGifs = storage.accessVIPs();
         savedGifs.add(item.getGuestAudition());
         savedGifs.add(item.getGuestHeight());
         savedGifs.add(item.getGuestWidth());
         savedGifs.add(item.getGuestID());
         storage.saveVIP(savedGifs);
+    }
+
+    public static void hideProgressSpinner(){
+        CircleProgressBar circleProgressBar = (CircleProgressBar) rootView.findViewById(R.id.progressBar);
+        circleProgressBar.setVisibility(View.GONE);
+    }
+
+    public static void showProgressSpinner(){
+        CircleProgressBar circleProgressBar = (CircleProgressBar) rootView.findViewById(R.id.progressBar);
+        circleProgressBar.setVisibility(View.VISIBLE);
     }
 
     private void confirmSaveOnce(){
@@ -200,7 +204,7 @@ public class MainParty extends Fragment {
     public void onResume() {
         super.onResume();
 
-        progressBar = (CircleProgressBar) rootView.findViewById(R.id.progressBar);
+        CircleProgressBar progressBar = (CircleProgressBar) rootView.findViewById(R.id.progressBar);
 
         if (isOnline() && firstTime) {
             firstTime = false;
@@ -221,10 +225,10 @@ public class MainParty extends Fragment {
         if (prefs.getBoolean("dontshowagain", false)) { return; } //comment out for testing
         //else
 
-            swipeUp = (TextView) rootView.findViewById(R.id.swipeUp);
-            swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
+            TextView swipeUp = (TextView) rootView.findViewById(R.id.swipeUp);
+            TextView swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
             Animation fadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
-            fadeInOut.setAnimationListener(new MyAnimationListener());
+            fadeInOut.setAnimationListener(new MyAnimationListener(swipeUp, swipeDown));
             swipeUp.startAnimation(fadeInOut);
 
             SharedPreferences.Editor editor = prefs.edit();
@@ -327,19 +331,26 @@ public class MainParty extends Fragment {
     }
 
     private static class MyAnimationListener implements Animation.AnimationListener{
+        private TextView upInstructions;
+        private TextView downInstructions;
+
+        public MyAnimationListener(TextView tv1, TextView tv2){
+            upInstructions = tv1;
+            downInstructions = tv2;
+        }
 
         @Override
         public void onAnimationStart(Animation animation) {
-            swipeUp.setVisibility(View.INVISIBLE);
+            upInstructions.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            swipeUp.clearAnimation();
-            swipeUp.setVisibility(View.GONE);
+            upInstructions.clearAnimation();
+            upInstructions.setVisibility(View.GONE);
             Animation fadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
-            fadeInOut.setAnimationListener(new MyOtherAnimationListener());
-            swipeDown.startAnimation(fadeInOut);
+            fadeInOut.setAnimationListener(new MyOtherAnimationListener(downInstructions));
+            downInstructions.startAnimation(fadeInOut);
         }
 
         @Override
@@ -349,16 +360,21 @@ public class MainParty extends Fragment {
     }
 
     private static class MyOtherAnimationListener implements Animation.AnimationListener{
+        private TextView downInstructions;
+
+        public MyOtherAnimationListener(TextView textView){
+            downInstructions = textView;
+        }
 
         @Override
         public void onAnimationStart(Animation animation) {
-            swipeDown.setVisibility(View.INVISIBLE);
+            downInstructions.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            swipeDown.clearAnimation();
-            swipeDown.setVisibility(View.GONE);
+            downInstructions.clearAnimation();
+            downInstructions.setVisibility(View.GONE);
         }
 
         @Override

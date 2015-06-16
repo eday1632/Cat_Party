@@ -21,16 +21,15 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import inappbilling.IabResult;
 
 public class NoVIPAccess extends Fragment {
     private OnFragmentInteractionListener mListener;
-    private static ImageView imageView;
-    private static Animation ropeFade;
     private static Context context;
-    private static Button purchase;
+    private static View rootView;
     static final String SKU_VIPACCESS = "vip_access";
     private IabHelper mHelper;
     static final String ITEM_SKU = "android.test.purchased";
@@ -43,11 +42,15 @@ public class NoVIPAccess extends Fragment {
     }
 
     public static void hideViews(){
+        ImageView imageView = (ImageView) rootView.findViewById(R.id.bouncer);
+        Button purchase = (Button) rootView.findViewById(R.id.purchase);
         imageView.setVisibility(View.INVISIBLE);
         purchase.setVisibility(View.INVISIBLE);
     }
 
     public static void showViews(){
+        ImageView imageView = (ImageView) rootView.findViewById(R.id.bouncer);
+        Button purchase = (Button) rootView.findViewById(R.id.purchase);
         imageView.setVisibility(View.VISIBLE);
         purchase.setVisibility(View.VISIBLE);
     }
@@ -62,15 +65,13 @@ public class NoVIPAccess extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        final View rootView = inflater.inflate(R.layout.no_vip_access, container, false);
-        imageView = (ImageView) rootView.findViewById(R.id.bouncer);
-        ropeFade = AnimationUtils.loadAnimation(context, R.anim.rope_fade);
+        rootView = inflater.inflate(R.layout.no_vip_access, container, false);
         SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("granted", 1);
         editor.apply();
 
-        purchase = (Button) rootView.findViewById(R.id.purchase);
+        Button purchase = (Button) rootView.findViewById(R.id.purchase);
         purchase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -240,19 +241,17 @@ public class NoVIPAccess extends Fragment {
     }
 
     public static void catsShunYou(){
+        ImageView imageView = (ImageView) rootView.findViewById(R.id.bouncer);
+        Button purchase = (Button) rootView.findViewById(R.id.purchase);
+
+        Animation tigerBouncer = AnimationUtils.loadAnimation(context, R.anim.rope_fade);
         Animation buttonFadeIn = AnimationUtils.loadAnimation(context, R.anim.donate_button_fade_in);
-        buttonFadeIn.setAnimationListener(new MyOtherAnimationListener());
 
-        ropeFade.setAnimationListener(new MyAnimationListener());
-        imageView.startAnimation(ropeFade);
+        tigerBouncer.setAnimationListener(new MyAnimationListener(imageView));
+        buttonFadeIn.setAnimationListener(new MyOtherAnimationListener(purchase));
+
+        imageView.startAnimation(tigerBouncer);
         purchase.startAnimation(buttonFadeIn);
-    }
-
-    void alert(String message) {
-        AlertDialog.Builder bld = new AlertDialog.Builder(context);
-        bld.setMessage(message);
-        bld.setNeutralButton("OK", null);
-        bld.create().show();
     }
 
     public void onButtonPressed(Uri uri) {
@@ -293,20 +292,25 @@ public class NoVIPAccess extends Fragment {
     }
 
     private static class MyAnimationListener implements Animation.AnimationListener{
+        ViewGroup.LayoutParams layoutParams;
+        ImageView tiger;
 
-        ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+        public MyAnimationListener(ImageView imageView){
+            tiger = imageView;
+            layoutParams = tiger.getLayoutParams();
+            layoutParams.width = Math.round(TwoRooms.screenWidthDp * TwoRooms.densityMultiple);
+            layoutParams.height = Math.round(TwoRooms.screenWidthDp * 9 * TwoRooms.densityMultiple / 10);
+            tiger.setLayoutParams(layoutParams);
+        }
 
         @Override
         public void onAnimationStart(Animation animation) {
-            layoutParams.width = Math.round(TwoRooms.screenWidthDp * TwoRooms.densityMultiple);
-            layoutParams.height = Math.round(TwoRooms.screenWidthDp * 9 * TwoRooms.densityMultiple / 10);
-            imageView.setLayoutParams(layoutParams);
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            imageView.clearAnimation();
-            imageView.setVisibility(View.VISIBLE);
+            tiger.clearAnimation();
+            tiger.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -316,6 +320,11 @@ public class NoVIPAccess extends Fragment {
     }
 
     private static class MyOtherAnimationListener implements Animation.AnimationListener{
+        private Button purchase;
+
+        public MyOtherAnimationListener(Button button){
+            purchase = button;
+        }
 
         @Override
         public void onAnimationStart(Animation animation) {

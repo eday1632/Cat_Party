@@ -35,7 +35,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             if(theWifiIsReturning) {
                 BuildURL buildURL = new BuildURL(context);
                 new VideoLoaderTask(context, activity).execute(buildURL.getURL());
-                MainParty.progressBar.setVisibility(View.VISIBLE);
+                MainParty.showProgressSpinner();
                 TwoRooms.setBackgroundImage(getResourceID(background), context.getResources());
             }
             MainParty.recyclerView.setVisibility(View.VISIBLE);
@@ -47,7 +47,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 
         } else {
             MainParty.recyclerView.setVisibility(View.INVISIBLE);
-            MainParty.progressBar.setVisibility(View.GONE);
+            MainParty.hideProgressSpinner();
             if(VIPParty.isActive) {
                 VIPParty.hideViews();
             } else {

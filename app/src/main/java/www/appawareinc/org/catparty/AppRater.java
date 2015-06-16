@@ -57,7 +57,7 @@ public class AppRater {
                     editor.putBoolean("dontshowagain", true);
                     editor.apply();
                 }
-                mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=rebuild.catpartyprotected")));
+                mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=www.appawareinc.org.catparty")));
                 dialog.dismiss();
             }
         });

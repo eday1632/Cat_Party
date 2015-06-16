@@ -37,6 +37,10 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         private CircleProgressBar progressBar;
         private ImageView stillView;
         public boolean loaded = false;
+        private ViewGroup.LayoutParams viewParams;
+        private ViewGroup.LayoutParams progressBarParams;
+        private Animation fadeIn;
+
 
         public SimpleViewHolder(final View itemView) {
             super(itemView);
@@ -44,6 +48,10 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
             container = (FrameLayout) itemView.findViewById(R.id.container);
             progressBar = (CircleProgressBar) itemView.findViewById(R.id.progressBar);
             stillView = (ImageView) itemView.findViewById(R.id.stillView);
+            viewParams = stillView.getLayoutParams();
+            progressBarParams = progressBar.getLayoutParams();
+            fadeIn = AnimationUtils.loadAnimation(context, R.anim.quick_fade_in);
+            fadeIn.setAnimationListener(new MyAnimationListener(gifView));
 
             itemView.setBackgroundColor(Color.TRANSPARENT);
             itemView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -62,7 +70,7 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         }
 
         public void hideAllViews(){
-            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.INVISIBLE);
             stillView.setVisibility(View.INVISIBLE);
             gifView.setVisibility(View.INVISIBLE);
         }
@@ -78,9 +86,10 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         public void showWebView() {
             if(vipAdapter)VIPParty.setVIPCounter(getPosition()+1);
             if(loaded) {
-                progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.INVISIBLE);
                 stillView.setVisibility(View.INVISIBLE);
-                gifView.setVisibility(View.VISIBLE);
+                gifView.startAnimation(fadeIn);
+//                gifView.setVisibility(View.VISIBLE);
             } else {
                 hideWebView();
             }
@@ -92,6 +101,29 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
         public FrameLayout getContainer(){
             return container;
+        }
+    }
+
+    private static class MyAnimationListener implements Animation.AnimationListener{
+        private WebView gifView;
+
+        public MyAnimationListener(WebView webView){
+            gifView = webView;
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            gifView.clearAnimation();
+            gifView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
         }
     }
 
@@ -125,21 +157,18 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         /*sets the width of the gifView because they are inconsistently sized*/
         final GifItem item = gifs.get(position);
 
-        ViewGroup.LayoutParams params = holder.stillView.getLayoutParams();
-        ViewGroup.LayoutParams pbParams = holder.progressBar.getLayoutParams();
-
         //layout parameters need to be in pixels, not density independent pixels (dp)
-        params.width = Math.round(Integer.parseInt(String.valueOf(item.getGuestWidth())) * TwoRooms.densityMultiple);
-        params.height = Math.round(Integer.parseInt(String.valueOf(item.getGuestHeight())) * TwoRooms.densityMultiple);
-        pbParams.height = params.height;
+        holder.viewParams.width = Math.round(Integer.parseInt(String.valueOf(item.getGuestWidth())) * TwoRooms.densityMultiple);
+        holder.viewParams.height = Math.round(Integer.parseInt(String.valueOf(item.getGuestHeight())) * TwoRooms.densityMultiple);
+        holder.progressBarParams.height = holder.viewParams.height;
 
-        holder.progressBar.setLayoutParams(pbParams);
-        holder.stillView.setLayoutParams(params);
-        holder.gifView.setLayoutParams(params);
+        holder.progressBar.setLayoutParams(holder.progressBarParams);
+        holder.stillView.setLayoutParams(holder.viewParams);
+        holder.gifView.setLayoutParams(holder.viewParams);
 
         if(position < 4) setAnimation(holder.container, position);
 
-        int topMargin = (TwoRooms.screenHeightDp - Integer.parseInt(item.getGuestHeight())) / 2;
+        int topMargin = Math.round((TwoRooms.screenHeightDp - Integer.parseInt(item.getGuestHeight())) * TwoRooms.densityMultiple / 3);
         int sideMargin = Math.round((TwoRooms.screenWidthDp - Integer.parseInt(item.getGuestWidth())) / 2 * TwoRooms.densityMultiple);
         RecyclerView.LayoutParams marginParams = (RecyclerView.LayoutParams) holder.container.getLayoutParams();
         if(position == 0) {

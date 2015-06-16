@@ -50,8 +50,6 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     private boolean notFirst = false;
     private static boolean notYetExecuted = true;
     private static boolean mainPartyWasLastVisible = true;
-    private SharedPreferences prefs;
-    private SharedPreferences instructions;
     public static float densityMultiple;
     public static int screenWidthDp;
     public static int screenHeightDp;
@@ -59,13 +57,11 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_two_rooms);
         context = this;
         screenDimensions();
         AppRater.evaluateIfRatingCriteriaMet(context);
-
-        prefs = context.getSharedPreferences("vip_access", 0);
-        instructions = context.getSharedPreferences("vip_instructions", 0);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,6 +109,9 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                     rippleTimer.start();
                 }
                 notFirst = true;
+
+                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
+                SharedPreferences instructions = context.getSharedPreferences("vip_instructions", 0);
 
                 if (prefs.getInt("granted", 0) == 1 && position == 1) {
                     NoVIPAccess.catsShunYou();
@@ -192,7 +191,6 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                 inSampleSize *= 2;
             }
         }
-
         return inSampleSize;
     }
 
@@ -341,8 +339,6 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
             super(fm);
         }
 
-
-
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
@@ -365,6 +361,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
             if (position == 0) {
                 return MainParty.newInstance(context);
             } else {
+                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
                 if (prefs.getInt("granted", 1) == 2) { // == 1 to reset, == 2 otherwise
                     return VIPParty.newInstance(context);
                 } else {

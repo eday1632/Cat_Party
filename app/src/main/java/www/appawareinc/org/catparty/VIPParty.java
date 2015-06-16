@@ -41,7 +41,6 @@ public class VIPParty extends Fragment {
     private static Context context;
     private static int returnPosition = 0;
     public static ViewHolderAdapter vipAdapter;
-    private static TextView swipeDown;
     public static boolean isActive = false;
 
     public static VIPParty newInstance(Context mContext) {
@@ -251,9 +250,9 @@ public class VIPParty extends Fragment {
     }
 
     public static void showInitialInstruction(){
-        swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
+        TextView swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
         Animation animationFadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
-        animationFadeInOut.setAnimationListener(new MyAnimationListener());
+        animationFadeInOut.setAnimationListener(new MyAnimationListener(swipeDown));
         swipeDown.startAnimation(animationFadeInOut);
 
         SharedPreferences prefs = context.getSharedPreferences("vip_instructions", 0);
@@ -263,16 +262,21 @@ public class VIPParty extends Fragment {
     }
 
     private static class MyAnimationListener implements Animation.AnimationListener {
+        private TextView downInstructions;
+
+        public MyAnimationListener(TextView textView){
+            downInstructions = textView;
+        }
 
         @Override
         public void onAnimationStart(Animation animation) {
-            swipeDown.setVisibility(View.INVISIBLE);
+            downInstructions.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            swipeDown.clearAnimation();
-            swipeDown.setVisibility(View.GONE);
+            downInstructions.clearAnimation();
+            downInstructions.setVisibility(View.GONE);
         }
 
         @Override

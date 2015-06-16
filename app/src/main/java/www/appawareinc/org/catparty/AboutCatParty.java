@@ -10,7 +10,6 @@ public class AboutCatParty extends Activity {
     /*lays out the view for the about screen*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
     }

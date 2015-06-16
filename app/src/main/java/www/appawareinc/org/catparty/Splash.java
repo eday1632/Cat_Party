@@ -46,7 +46,7 @@ public class Splash extends Activity {
             startService(jinglePlayer);
         }
 
-        View decorView = getWindow().getDecorView();
+        final View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
@@ -57,12 +57,19 @@ public class Splash extends Activity {
                 try {
                     synchronized (timer) {
                         timer.wait(3000); //TODO: 3000 for production
-                        Intent openMain = new Intent("www.appawareinc.org.catparty.TWOROOMS");
-                        startActivity(openMain);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent openMain = new Intent("www.appawareinc.org.catparty.TWOROOMS");
+                            startActivity(openMain);
+                            int uiFlagVisible = View.SYSTEM_UI_FLAG_VISIBLE;
+                            decorView.setSystemUiVisibility(uiFlagVisible);
+                        }
+                    });
                     finish();
                 }
             }
