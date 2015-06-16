@@ -86,7 +86,7 @@ public class NoVIPAccess extends Fragment {
                 Intent preferences = new Intent("www.appawareinc.org.catparty.TESTPURCHASEACTIVITY");
                 startActivity(preferences);
                 editor.putInt("granted", 1);//1 for testing, 2 for production
-                editor.commit();
+                editor.apply();
 //                final Dialog dialog = new Dialog(context);
 //                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 //                dialog.setContentView(R.layout.restart_dialog);

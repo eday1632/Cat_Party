@@ -69,7 +69,7 @@ public class ChooseBackground extends Activity {
                         SharedPreferences prefs = getSharedPreferences(getString(R.string.pref_background), MODE_PRIVATE);
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString(getString(R.string.pref_background), IDs[myPosition]);
-                        editor.commit();
+                        editor.apply();
                         logAnalyticsEvent(IDs[myPosition]);
                         finish();
                     }

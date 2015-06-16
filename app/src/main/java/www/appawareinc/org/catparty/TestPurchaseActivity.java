@@ -95,8 +95,8 @@ public class TestPurchaseActivity extends Activity {
     boolean mSubscribedToInfiniteGas = false;
 
     // SKUs for our products: the premium upgrade (non-consumable) and gas (consumable)
-    static final String SKU_PREMIUM = "vip_access";
-    static final String SKU_GAS = "gas";
+    static final String SKU_PREMIUM = "android.test.purchased"; //"vip_access";
+    static final String SKU_GAS = "android.test.item_unavailable"; //"gas";
 
     // SKU for our subscription (infinite gas)
     static final String SKU_INFINITE_GAS = "infinite_gas";
