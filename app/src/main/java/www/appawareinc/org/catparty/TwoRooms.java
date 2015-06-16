@@ -21,6 +21,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,7 +72,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setLogo(R.drawable.logo_noedge);
 
-        final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.content);
+        final RippleBackground rippleBackground = (RippleBackground)findViewById(R.id.content);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         List<String> list = new ArrayList<>();
@@ -308,6 +309,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                         VIPParty.vipAdapter.clearAllVIPs();
                         VIPParty.setSeekBarMax();
                         VIPParty.setVIPCounter(0);
+
                     }
                     dialog.dismiss();
                     Toast.makeText(getBaseContext(), R.string.vips_cleared, Toast.LENGTH_SHORT).show();
@@ -382,21 +384,27 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     protected void onStop() {
         super.onStop();
 
-        deleteCache(this);
+        clearApplicationData(this);
     }
 
-    public static void deleteCache(Context context) {
-        try {
-            File dir = context.getCacheDir();
-            if (dir != null && dir.isDirectory()) {
-                deleteDir(dir);
+    public static void clearApplicationData(Context context) {
+        File cache = context.getCacheDir();
+        File appDir = new File(cache.getParent());
+        if (appDir.exists()) {
+            String[] children = appDir.list();
+            for (String s : children) {
+                File f = new File(appDir, s);
+                if(f.getAbsolutePath().contentEquals("/data/data/www.appawareinc.org.catparty/files") ||
+                        f.getAbsolutePath().contentEquals("/data/data/www.appawareinc.org.catparty/shared_prefs")){
+                    //do nothing
+                } else {
+                    deleteDir(f);
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    public static boolean deleteDir(File dir) {
+    private static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {

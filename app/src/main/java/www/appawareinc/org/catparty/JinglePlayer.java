@@ -2,6 +2,7 @@ package www.appawareinc.org.catparty;
 
 import android.app.Service;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
@@ -14,6 +15,7 @@ public class JinglePlayer extends Service implements MediaPlayer.OnPreparedListe
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         try {
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDataSource(getBaseContext(),
                     Uri.parse("android.resource://www.appawareinc.org.catparty/" + R.raw.cat_party_jingle));
         } catch (IOException e) {
@@ -29,7 +31,7 @@ public class JinglePlayer extends Service implements MediaPlayer.OnPreparedListe
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.prepareAsync(); // prepare async to not block main thread
 
-        return 0;
+        return START_NOT_STICKY;
     }
 
     @Override

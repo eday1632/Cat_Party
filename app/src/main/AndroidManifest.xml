@@ -7,12 +7,15 @@ android:installLocation="auto"
     <!-- we only support normal to xlarge and hdpi or greater -->
     <screen android:screenDensity="hdpi" android:screenSize="normal"/>
     <screen android:screenDensity="xhdpi" android:screenSize="normal"/>
+    <screen android:screenDensity="480" android:screenSize="normal"/>
 
     <screen android:screenDensity="hdpi" android:screenSize="large"/>
     <screen android:screenDensity="xhdpi" android:screenSize="large"/>
+    <screen android:screenDensity="480" android:screenSize="large"/>
 
     <screen android:screenDensity="hdpi" android:screenSize="xlarge"/>
     <screen android:screenDensity="xhdpi" android:screenSize="xlarge"/>
+    <screen android:screenDensity="480" android:screenSize="xlarge"/>
 </compatible-screens>
 
 <uses-permission android:name="android.permission.INTERNET" />
@@ -78,8 +81,7 @@ android:installLocation="auto"
     </activity>
     <activity
         android:name="www.appawareinc.org.catparty.AboutCatParty"
-        android:screenOrientation="portrait"
-        android:label="@string/about_cat_party" >
+        android:screenOrientation="portrait" >
         <intent-filter>
             <action android:name="www.appawareinc.org.catparty.ABOUTCATPARTY" />
 

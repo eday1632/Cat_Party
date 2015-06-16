@@ -32,6 +32,8 @@ public class SnappyRecyclerView extends RecyclerView {
     * also makes a new gif take the center position on the screen*/
     @Override
     public boolean fling(int velocityX, int velocityY) {
+        super.fling(velocityX, velocityY);
+
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) getLayoutManager();
 
         int lastVisibleView = linearLayoutManager.findLastVisibleItemPosition();

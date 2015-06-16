@@ -58,8 +58,10 @@ public class SwipeableTouchListener implements RecyclerView.OnItemTouchListener 
          * to this listener.
          */
         mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     int firstPart = layoutManager.findFirstVisibleItemPosition();
@@ -89,7 +91,6 @@ public class SwipeableTouchListener implements RecyclerView.OnItemTouchListener 
                     }
                 }
             }
-
         });
     }
 

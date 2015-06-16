@@ -62,7 +62,7 @@ public class NoVIPAccess extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.no_vip_access, container, false);
+        final View rootView = inflater.inflate(R.layout.no_vip_access, container, false);
         imageView = (ImageView) rootView.findViewById(R.id.bouncer);
         ropeFade = AnimationUtils.loadAnimation(context, R.anim.rope_fade);
         SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
@@ -74,8 +74,26 @@ public class NoVIPAccess extends Fragment {
         purchase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                restartForVIPAccess();
-                //onUpgradeAppButtonClicked();
+                final RippleBackground rippleBackground = (RippleBackground) rootView.findViewById(R.id.rippler);
+                rippleBackground.startRippleAnimation();
+                Thread rippleTimer = new Thread() {
+                    public void run() {
+                        try {
+                            sleep(300);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    rippleBackground.stopRippleAnimation();
+                                }
+                            });
+                        }
+                    }
+                };
+                rippleTimer.start();
+
                 editor.putInt("granted", 2);//1 for testing, 2 for production
                 editor.commit();
                 final Dialog dialog = new Dialog(context);
@@ -92,7 +110,6 @@ public class NoVIPAccess extends Fragment {
                         dialog.dismiss();
                     }
                 });
-
                 dialog.show();
             }
         });
@@ -223,8 +240,12 @@ public class NoVIPAccess extends Fragment {
     }
 
     public static void catsShunYou(){
+        Animation buttonFadeIn = AnimationUtils.loadAnimation(context, R.anim.donate_button_fade_in);
+        buttonFadeIn.setAnimationListener(new MyOtherAnimationListener());
+
         ropeFade.setAnimationListener(new MyAnimationListener());
         imageView.startAnimation(ropeFade);
+        purchase.startAnimation(buttonFadeIn);
     }
 
     void alert(String message) {
@@ -286,6 +307,25 @@ public class NoVIPAccess extends Fragment {
         public void onAnimationEnd(Animation animation) {
             imageView.clearAnimation();
             imageView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    }
+
+    private static class MyOtherAnimationListener implements Animation.AnimationListener{
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            purchase.clearAnimation();
+            purchase.setVisibility(View.VISIBLE);
         }
 
         @Override

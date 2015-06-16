@@ -172,8 +172,8 @@ public class VIPParty extends Fragment {
 
     public static void showViews(){
         recyclerView.setVisibility(View.VISIBLE);
-        seekBar.setVisibility(View.VISIBLE);
         vipCounter.setVisibility(View.VISIBLE);
+        if(vipAdapter != null && vipAdapter.getItemCount() > 9) seekBar.setVisibility(View.VISIBLE);
     }
 
 
@@ -213,7 +213,14 @@ public class VIPParty extends Fragment {
     }
 
     public static void setSeekBarMax(){
-        if(vipAdapter != null) seekBar.setMax(vipAdapter.getItemCount() - 1);
+        if(vipAdapter != null) {
+            seekBar.setMax(vipAdapter.getItemCount() - 1);
+            if(vipAdapter.getItemCount() > 9 && MainParty.isOnline()) {
+                seekBar.setVisibility(View.VISIBLE);
+            } else {
+                seekBar.setVisibility(View.GONE);
+            }
+        }
     }
 
     public static void setVIPCounter(int position){
