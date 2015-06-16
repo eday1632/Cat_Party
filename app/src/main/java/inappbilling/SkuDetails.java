@@ -18,8 +18,6 @@ package inappbilling;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import www.appawareinc.org.catparty.IabHelper;
-
 /**
  * Represents an in-app product's listing details.
  */

@@ -13,21 +13,19 @@
  * limitations under the License.
  */
 
-package www.appawareinc.org.catparty;
+package inappbilling;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import inappbilling.SkuDetails;
-
 /**
  * Represents a block of information about in-app items.
  * An Inventory is returned by such methods as {@link IabHelper#queryInventory}.
  */
 public class Inventory {
-    Map<String, SkuDetails> mSkuMap = new HashMap<String, SkuDetails>();
+    Map<String,SkuDetails> mSkuMap = new HashMap<String,SkuDetails>();
     Map<String,Purchase> mPurchaseMap = new HashMap<String,Purchase>();
 
     Inventory() { }

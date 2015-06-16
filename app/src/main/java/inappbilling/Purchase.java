@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package www.appawareinc.org.catparty;
+package inappbilling;
 
 import org.json.JSONException;
 import org.json.JSONObject;

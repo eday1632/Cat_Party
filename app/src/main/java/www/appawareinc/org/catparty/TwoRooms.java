@@ -391,8 +391,8 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
             String[] children = appDir.list();
             for (String s : children) {
                 File f = new File(appDir, s);
-                if(f.getAbsolutePath().contentEquals("/data/data/www.appawareinc.org.catparty/files") ||
-                        f.getAbsolutePath().contentEquals("/data/data/www.appawareinc.org.catparty/shared_prefs")){
+                if(f.getAbsolutePath().contains("files") ||
+                        f.getAbsolutePath().contains("shared_prefs")){
                     //do nothing
                 } else {
                     deleteDir(f);

@@ -24,14 +24,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import inappbilling.BuildKey;
+import inappbilling.IabHelper;
 import inappbilling.IabResult;
+import inappbilling.Inventory;
+import inappbilling.Purchase;
 
 public class NoVIPAccess extends Fragment {
     private OnFragmentInteractionListener mListener;
     private static Context context;
     private static View rootView;
     static final String SKU_VIPACCESS = "vip_access";
-    private IabHelper mHelper;
+    IabHelper mHelper;
     static final String ITEM_SKU = "android.test.purchased";
 
     public static NoVIPAccess newInstance (Context mContext){
@@ -75,78 +82,60 @@ public class NoVIPAccess extends Fragment {
         purchase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final RippleBackground rippleBackground = (RippleBackground) rootView.findViewById(R.id.rippler);
-                rippleBackground.startRippleAnimation();
-                Thread rippleTimer = new Thread() {
-                    public void run() {
-                        try {
-                            sleep(300);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    rippleBackground.stopRippleAnimation();
-                                }
-                            });
-                        }
-                    }
-                };
-                rippleTimer.start();
-
-                editor.putInt("granted", 2);//1 for testing, 2 for production
+//                restartForVIPAccess();
+                Intent preferences = new Intent("www.appawareinc.org.catparty.TESTPURCHASEACTIVITY");
+                startActivity(preferences);
+                editor.putInt("granted", 1);//1 for testing, 2 for production
                 editor.commit();
-                final Dialog dialog = new Dialog(context);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.restart_dialog);
-                dialog.getWindow().setLayout(Math.round(280 * TwoRooms.densityMultiple),
-                        Math.round(244 * TwoRooms.densityMultiple)); //width, height
-
-                Button yesDelete = (Button) dialog.findViewById(R.id.buttonOkay);
-                yesDelete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        restartForVIPAccess();
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+//                final Dialog dialog = new Dialog(context);
+//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                dialog.setContentView(R.layout.restart_dialog);
+//                dialog.getWindow().setLayout(Math.round(280 * TwoRooms.densityMultiple),
+//                        Math.round(244 * TwoRooms.densityMultiple)); //width, height
+//
+//                Button yesDelete = (Button) dialog.findViewById(R.id.buttonOkay);
+//                yesDelete.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        restartForVIPAccess();
+//                        dialog.dismiss();
+//                    }
+//                });
+//                dialog.show();
             }
         });
 
-        String base64EncodedPublicKey =
-                "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAov9+84dDesqC622L6XpYrGfXfqT399jNTY2wWNE4tDCxE/n9KfEDAByw3J39fXrJfQBGrPY4JYOj2JIxS6hcwnouKdWTcd2f4WN2+QOD2E1WSitDbxmYyZa2A2CsBLliCIrwAH6ylrHzRMyogxqIvE/HCaEju4LvsD72pB+wfsLRHCuFI53HYYVp/5scDBNHd+bMup1VJvwl5OAAs8Hz+d1ExFS+wJg5lBwM5eYj1FZtRpM13IBBkkK5qQbAG3VEZB62QfDJXuvHbsTholb1a141rmDXn08+23rrNPSPirMS+/sTyGZzI2H8OSzvB3FY3M1FS+PzMBFCLPC0jkACmwIDAQAB";
-
-//        BuildKey bk = new BuildKey();
-//        String pubKey = bk.getKey();
-        mHelper = new IabHelper(context, base64EncodedPublicKey);
-//        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() { //TODO: comment out when using emulator
-//            @Override
-//            public void onIabSetupFinished(IabResult result) {
-//                if (!result.isSuccess()) {
-//                    Log.d("InAppBilling", "In-app Billing setup failed: " +
-//                            result);
-//                } else {
-//                    Log.d("InAppBilling", "In-app Billing is set up OK");
-//                    mHelper.queryInventoryAsync(mReceivedInventoryListener);
-//                }
-//            }
-//        });
+        BuildKey bk = new BuildKey();
+        String pubKey = bk.getKey();
+//        final List additionalSkuList = new LinkedList();
+//        additionalSkuList.add(ITEM_SKU);
+        mHelper = new IabHelper(context, pubKey);
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() { //TODO: comment out when using emulator
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    Log.d("InAppBilling", "In-app Billing setup failed: " +
+                            result);
+                } else {
+                    Log.d("InAppBilling", "In-app Billing is set up OK");
+                    mHelper.queryInventoryAsync(mReceivedInventoryListener);
+                }
+            }
+        });
 
         return rootView;
     }
 
     public void restartForVIPAccess(){
-//        mHelper.launchPurchaseFlow((Activity)context, ITEM_SKU, 10001, mPurchaseFinishedListener, "mypurchasetoken");
-        Intent intent = context.getPackageManager()
-                .getLaunchIntentForPackage( context.getPackageName() );
-
-        PendingIntent pending = PendingIntent.getActivity(
-                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
-        System.exit(2);
+        mHelper.launchPurchaseFlow((Activity)context, ITEM_SKU, 10001, mPurchaseFinishedListener, "mypurchasetoken");
+//        Intent intent = context.getPackageManager()
+//                .getLaunchIntentForPackage( context.getPackageName() );
+//
+//        PendingIntent pending = PendingIntent.getActivity(
+//                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
+//        System.exit(2);
     }
 
     public void consumeItem() {

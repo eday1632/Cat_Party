@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package www.appawareinc.org.catparty;
+package inappbilling;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -35,11 +35,6 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import inappbilling.IabException;
-import inappbilling.IabResult;
-import inappbilling.Security;
-import inappbilling.SkuDetails;
 
 
 /**
@@ -341,6 +336,16 @@ public class IabHelper {
     public void launchPurchaseFlow(Activity act, String sku, int requestCode,
             OnIabPurchaseFinishedListener listener, String extraData) {
         launchPurchaseFlow(act, sku, ITEM_TYPE_INAPP, requestCode, listener, extraData);
+    }
+
+    public void launchSubscriptionPurchaseFlow(Activity act, String sku, int requestCode,
+            OnIabPurchaseFinishedListener listener) {
+        launchSubscriptionPurchaseFlow(act, sku, requestCode, listener, "");
+    }
+
+    public void launchSubscriptionPurchaseFlow(Activity act, String sku, int requestCode,
+            OnIabPurchaseFinishedListener listener, String extraData) {
+        launchPurchaseFlow(act, sku, ITEM_TYPE_SUBS, requestCode, listener, extraData);
     }
 
     /**
@@ -893,7 +898,6 @@ public class IabHelper {
         logDebug("Querying SKU details.");
         ArrayList<String> skuList = new ArrayList<String>();
         skuList.addAll(inv.getAllOwnedSkus(itemType));
-        skuList.add("vip_access");
         if (moreSkus != null) {
             for (String sku : moreSkus) {
                 if (!skuList.contains(sku)) {
