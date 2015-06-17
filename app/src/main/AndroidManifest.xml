@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="www.appawareinc.org.catparty"
-android:installLocation="auto"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="www.appawareinc.org.catparty"
+    android:installLocation="auto">
 
 <compatible-screens>
     <!-- we only support normal to xlarge and hdpi or greater -->
@@ -25,6 +25,7 @@ android:installLocation="auto"
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 <application
+    android:supportsRtl="true"
     android:name="analytics.AnalyticsTool"
     android:allowBackup="true"
     android:label="@string/app_name"

@@ -479,7 +479,7 @@ public class TestPurchaseActivity extends Activity {
 
         SharedPreferences.Editor spe = getPreferences(MODE_PRIVATE).edit();
         spe.putInt("tank", mTank);
-        spe.commit();
+        spe.apply();
         Log.d(TAG, "Saved data: tank = " + String.valueOf(mTank));
     }
 

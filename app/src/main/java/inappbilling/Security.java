@@ -55,20 +55,6 @@ public class Security {
      * @param signedData the signed JSON string (signed, not encrypted)
      * @param signature the signature for the data, signed with the private key
      */
-//    public static boolean verifyPurchase(String base64PublicKey, String signedData, String signature) {
-//        if (TextUtils.isEmpty(signedData) || TextUtils.isEmpty(base64PublicKey) ||
-//                TextUtils.isEmpty(signature)) {
-//            if (TextUtils.isEmpty(signedData)){Log.e(TAG, "Purchase verification failed: Signed data missing.");}
-//            if (TextUtils.isEmpty(base64PublicKey)){Log.e(TAG, "Purchase verification failed: Public key missing.");}
-//            if (TextUtils.isEmpty(signature)){Log.e(TAG, "Purchase verification failed: Signature missing.");}
-////            Log.e(TAG, "Purchase verification failed: missing data.");
-//            return false;
-//        }
-//
-//        PublicKey key = Security.generatePublicKey(base64PublicKey);
-//        return Security.verify(key, signedData, signature);
-//    }
-
     public static boolean verifyPurchase(String base64PublicKey, String signedData, String signature) {
         if (signedData == null) {
             Log.e(TAG, "data is null");

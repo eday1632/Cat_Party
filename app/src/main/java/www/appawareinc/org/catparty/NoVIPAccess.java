@@ -39,7 +39,7 @@ public class NoVIPAccess extends Fragment {
     private static View rootView;
     static final String SKU_VIPACCESS = "vip_access";
     IabHelper mHelper;
-    static final String ITEM_SKU = "android.test.purchased";
+//    static final String ITEM_SKU = "android.test.purchased";
 
     public static NoVIPAccess newInstance (Context mContext){
         NoVIPAccess fragment = new NoVIPAccess();

@@ -436,7 +436,6 @@ public class IabHelper {
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         IabResult result;
-        Log.d("Test", "Got to handleActivityResult");
         if (requestCode != mRequestCode) return false;
 
         checkNotDisposed();
@@ -451,8 +450,6 @@ public class IabHelper {
             if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);
             return true;
         }
-
-        Log.d("Test", "Got to handleActivityResult + before signature assigned");
 
         int responseCode = getResponseCodeFromIntent(data);
         String purchaseData = data.getStringExtra(RESPONSE_INAPP_PURCHASE_DATA);
@@ -508,7 +505,7 @@ public class IabHelper {
             }
         }
         else if (resultCode == Activity.RESULT_CANCELED) {
-            logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
+            logDebug("Purchase canceled on YOU - Response: " + getResponseDesc(responseCode));
             result = new IabResult(IABHELPER_USER_CANCELLED, "User canceled.");
             if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);
         }

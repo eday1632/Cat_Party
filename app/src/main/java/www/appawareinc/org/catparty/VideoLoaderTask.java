@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -68,9 +71,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             MainParty.hideProgressSpinner();
             logAnalyticsEvent(gifs.size());
         } else {
-//            Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
-//            BuildURL buildURL = new BuildURL(context);
-//            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
+            Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -84,25 +85,14 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
                     .build());
     }
 
-    private String getUrl(String address) throws IOException {
-        String output = "";
+    String run(String url) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
 
-        try {
-            URL url = new URL(address);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-
-            for (String line = ""; line != null; line = reader.readLine()) {
-                output = output + line + "\n";
-            }
-            urlConnection.disconnect();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            output = null;
-        }
-        return output;
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 
     private ArrayList<GifItem> getGifs(String output) {
@@ -110,7 +100,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         JSONArray returnedVideos;
 
         try {
-            String rawResponse = getUrl(output);
+            String rawResponse = run(output);
             if(rawResponse == null){
                 return URLs = null; //exit the process here if we didn't get anything back from Giphy
             }
