@@ -2,8 +2,11 @@ package www.appawareinc.org.catparty;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.provider.SyncStateContract;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +44,8 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         private ViewGroup.LayoutParams viewParams;
         private ViewGroup.LayoutParams progressBarParams;
         private Animation fadeIn;
+        private long startTime;
+        private int refreshCount;
 
 
         public SimpleViewHolder(final View itemView) {
@@ -59,18 +65,36 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
             gifView.setWebViewClient(new WebViewClient() {
 
                 @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    super.onPageStarted(view, url, favicon);
+                    startTime = System.currentTimeMillis();
+                    refreshCount++;
+                }
+
+                @Override
+                public void onLoadResource(WebView view, String url) {
+                    if(url.contains("favicon.ico")) {
+                        ;
+                    } else {
+                        super.onLoadResource(view, url);
+                    }
+                }
+
+                @Override
                 public void onPageFinished(WebView view, String url) {
                     loaded = true;
                     int screenMiddle = Math.round(TwoRooms.screenWidthDp * TwoRooms.densityMultiple / 2);
                     if (container.getLeft() < screenMiddle && container.getRight() > screenMiddle) {
                         showWebView();
                     }
+                    long endTime = System.currentTimeMillis() - startTime;
+                    Log.d("LoadURLTime", "Loaded "+url+ " ["+refreshCount+"] time(s) in ["+endTime+"] ms");
                 }
             });
         }
 
         public void hideAllViews(){
-            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.GONE);
             stillView.setVisibility(View.INVISIBLE);
             gifView.setVisibility(View.INVISIBLE);
         }
@@ -86,10 +110,9 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         public void showWebView() {
             if(vipAdapter)VIPParty.setVIPCounter(getPosition()+1);
             if(loaded) {
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
                 stillView.setVisibility(View.INVISIBLE);
                 gifView.startAnimation(fadeIn);
-//                gifView.setVisibility(View.VISIBLE);
             } else {
                 hideWebView();
             }
@@ -183,8 +206,9 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
         holder.resetLoadStatus();
         try{
+//            holder.gifView.loadUrl(SyncStateContract.Constants.CONTENT_DIRECTORY);
             holder.gifView.loadUrl(item.getGuestAudition());
-            //holder.gifView.loadUrl("http://www.google.com");
+//            holder.gifView.loadUrl("http://www.google.com");
         } catch (Exception e){
             e.printStackTrace();
             holder.hideWebView();

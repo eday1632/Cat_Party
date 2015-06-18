@@ -62,16 +62,7 @@
             <category android:name="android.intent.category.DEFAULT" />
         </intent-filter>
     </activity>
-    <activity
-        android:name=".TestPurchaseActivity"
-        android:screenOrientation="portrait"
-        >
-        <intent-filter>
-            <action android:name="www.appawareinc.org.catparty.TESTPURCHASEACTIVITY" />
 
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
-    </activity>
     <activity android:name=".ChooseBackground"
         android:screenOrientation="portrait">
         <intent-filter>

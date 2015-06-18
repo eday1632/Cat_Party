@@ -155,13 +155,11 @@ public class MainParty extends Fragment {
     }
 
     public static void hideProgressSpinner(){
-        CircleProgressBar circleProgressBar = (CircleProgressBar) rootView.findViewById(R.id.progressBar);
-        circleProgressBar.setVisibility(View.GONE);
+        rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
     }
 
     public static void showProgressSpinner(){
-        CircleProgressBar circleProgressBar = (CircleProgressBar) rootView.findViewById(R.id.progressBar);
-        circleProgressBar.setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
     }
 
     private void confirmSaveOnce(){
@@ -204,16 +202,14 @@ public class MainParty extends Fragment {
     public void onResume() {
         super.onResume();
 
-        CircleProgressBar progressBar = (CircleProgressBar) rootView.findViewById(R.id.progressBar);
-
         if (isOnline() && firstTime) {
             firstTime = false;
-            progressBar.setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
             BuildURL buildURL = new BuildURL(context);
             new VideoLoaderTask(context, getActivity()).execute(buildURL.getURL());
         } else if (!isOnline()) {
-            recyclerView.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.GONE);
+            rootView.findViewById(R.id.main_recycler_view).setVisibility(View.INVISIBLE);
+            rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
         }
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -237,17 +233,21 @@ public class MainParty extends Fragment {
     }
 
     public static void playGifsWhenVisible(){
-        recyclerView.requestLayout();
-        recyclerView.scrollToPosition(returnPosition);
+        SnappyRecyclerView visibleRecyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.main_recycler_view);
+        visibleRecyclerView.requestLayout();
+        visibleRecyclerView.scrollToPosition(returnPosition);
     }
 
     public static void dontPlayGifsWhenOffscreen(){
-        LinearLayoutManager llm = (LinearLayoutManager) recyclerView.getLayoutManager();
+        SnappyRecyclerView visibleRecyclerView =
+                (SnappyRecyclerView) rootView.findViewById(R.id.main_recycler_view);
+        LinearLayoutManager llm = (LinearLayoutManager) visibleRecyclerView.getLayoutManager();
         ViewHolderAdapter.SimpleViewHolder svh =
-                (ViewHolderAdapter.SimpleViewHolder) recyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());
+                (ViewHolderAdapter.SimpleViewHolder)
+                        visibleRecyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());
         if(svh != null) {
             returnPosition = svh.getPosition();
-            recyclerView.removeAllViewsInLayout();
+            visibleRecyclerView.removeAllViewsInLayout();
         }
     }
 

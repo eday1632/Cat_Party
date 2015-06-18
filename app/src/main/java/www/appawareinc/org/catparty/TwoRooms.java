@@ -113,12 +113,12 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                 SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
                 SharedPreferences instructions = context.getSharedPreferences("vip_instructions", 0);
 
-                if (prefs.getInt("granted", 0) == 1 && position == 1) {
-                    NoVIPAccess.catsShunYou();
-                    Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_LONG).show();
-                } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
+//                if (prefs.getInt("granted", 0) == 1 && position == 1) {
+//                    NoVIPAccess.catsShunYou();
+//                    Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_LONG).show();
+//                } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
                     VIPParty.showInitialInstruction();
-                }
+//                }
             }
 
             @Override
@@ -152,6 +152,23 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
 
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("xkcd TwoRooms", "I stole your thunder!");
+        if (NoVIPAccess.mHelper == null) return;
+
+        // Pass on the activity result to the helper for handling
+        if (!NoVIPAccess.mHelper.handleActivityResult(requestCode, resultCode, data)) {
+            // not handled, so handle it ourselves (here's where you'd
+            // perform any handling of activity results not related to in-app
+            // billing...
+            super.onActivityResult(requestCode, resultCode, data);
+        } else {
+            Log.d("xkcd TwoRooms", "onActivityResult handled by IABUtil.");
+        }
     }
 
     public boolean isOnline() {
@@ -361,12 +378,12 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
             if (position == 0) {
                 return MainParty.newInstance(context);
             } else {
-                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
-                if (prefs.getInt("granted", 1) == 2) { // == 1 to reset, == 2 otherwise
+//                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
+//                if (prefs.getInt("granted", 1) == 2) { // == 1 to reset, == 2 otherwise
                     return VIPParty.newInstance(context);
-                } else {
-                    return NoVIPAccess.newInstance(context);
-                }
+//                } else {
+//                    return NoVIPAccess.newInstance(context);
+//                }
             }
         }
 

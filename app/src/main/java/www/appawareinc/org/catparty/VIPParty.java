@@ -34,10 +34,8 @@ public class VIPParty extends Fragment {
     private OnFragmentInteractionListener mListener;
     private static SnappyRecyclerView recyclerView;
     private static TextView vipCounter;
-    private static SeekBar seekBar;
     private static View rootView;
     private boolean confirmDelete = true;
-    private static List<GifItem> gifItems;
     private static Context context;
     private static int returnPosition = 0;
     public static ViewHolderAdapter vipAdapter;
@@ -47,9 +45,7 @@ public class VIPParty extends Fragment {
         VIPParty fragment = new VIPParty();
         Bundle args = new Bundle();
         context = mContext;
-        Storage storage = new Storage(context);
         fragment.setArguments(args);
-        gifItems = gifListRebuilder(storage.accessVIPs());
         return fragment;
     }
 
@@ -79,7 +75,7 @@ public class VIPParty extends Fragment {
         recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.vip_recycler_view);
         recyclerView.setLayoutManager(getLayoutManager());
 
-        seekBar = (SeekBar) rootView.findViewById(R.id.seekBar);
+        SeekBar seekBar = (SeekBar) rootView.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             private int tempProgress;
 
@@ -164,29 +160,32 @@ public class VIPParty extends Fragment {
     }
 
     public static void hideViews() {
-        recyclerView.setVisibility(View.INVISIBLE);
-        seekBar.setVisibility(View.INVISIBLE);
-        vipCounter.setVisibility(View.INVISIBLE);
+        rootView.findViewById(R.id.vip_recycler_view).setVisibility(View.INVISIBLE);
+        rootView.findViewById(R.id.seekBar).setVisibility(View.INVISIBLE);
+        rootView.findViewById(R.id.vip_counter).setVisibility(View.INVISIBLE);
     }
 
     public static void showViews(){
-        recyclerView.setVisibility(View.VISIBLE);
-        vipCounter.setVisibility(View.VISIBLE);
-        if(vipAdapter != null && vipAdapter.getItemCount() > 9) seekBar.setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.vip_recycler_view).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.vip_counter).setVisibility(View.VISIBLE);
+        if(vipAdapter != null && vipAdapter.getItemCount() > 9) rootView.findViewById(R.id.seekBar).setVisibility(View.VISIBLE);
     }
 
 
     public static void playGifsWhenVisible(){
         Storage storage = new Storage(context);
-        gifItems = gifListRebuilder(storage.accessVIPs());
+        List<GifItem> gifItems = gifListRebuilder(storage.accessVIPs());
+        vipAdapter = new ViewHolderAdapter(context, gifItems);
+
+        SnappyRecyclerView recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.vip_recycler_view);
         recyclerView.requestLayout();
         recyclerView.scrollToPosition(returnPosition);
-        vipAdapter = new ViewHolderAdapter(context, gifItems);
         recyclerView.setAdapter(vipAdapter);
         setSeekBarMax();
     }
 
     public static void dontPlayGifsWhenOffscreen(){
+        SnappyRecyclerView recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.vip_recycler_view);
         LinearLayoutManager llm = (LinearLayoutManager) recyclerView.getLayoutManager();
         ViewHolderAdapter.SimpleViewHolder svh =
                 (ViewHolderAdapter.SimpleViewHolder) recyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());
@@ -213,11 +212,12 @@ public class VIPParty extends Fragment {
 
     public static void setSeekBarMax(){
         if(vipAdapter != null) {
+            SeekBar seekBar = (SeekBar) rootView.findViewById(R.id.seekBar);
             seekBar.setMax(vipAdapter.getItemCount() - 1);
             if(vipAdapter.getItemCount() > 9 && MainParty.isOnline()) {
-                seekBar.setVisibility(View.VISIBLE);
+                rootView.findViewById(R.id.seekBar).setVisibility(View.VISIBLE);
             } else {
-                seekBar.setVisibility(View.GONE);
+                rootView.findViewById(R.id.seekBar).setVisibility(View.GONE);
             }
         }
     }

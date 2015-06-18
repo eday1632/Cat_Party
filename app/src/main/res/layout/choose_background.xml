@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/container"
-    android:background="@drawable/black_fur">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tap_instruction"
@@ -24,6 +21,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@drawable/black_fur"/>
 
-</FrameLayout>
+</merge>

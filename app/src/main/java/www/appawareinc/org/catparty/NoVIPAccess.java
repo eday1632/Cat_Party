@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -21,11 +22,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import inappbilling.BuildKey;
 import inappbilling.IabHelper;
@@ -37,29 +33,27 @@ public class NoVIPAccess extends Fragment {
     private OnFragmentInteractionListener mListener;
     private static Context context;
     private static View rootView;
-    static final String SKU_VIPACCESS = "vip_access";
-    IabHelper mHelper;
-//    static final String ITEM_SKU = "android.test.purchased";
+    boolean mIsPremium = false;
+    static final String TAG = "xkcd NoVIPAccess";
+    static final String SKU_PREMIUM = "vip_access";
+    static final int RC_REQUEST = 10001;
+    public static IabHelper mHelper;
 
-    public static NoVIPAccess newInstance (Context mContext){
+    public static NoVIPAccess newInstance(Context mContext) {
         NoVIPAccess fragment = new NoVIPAccess();
         context = mContext;
 
         return fragment;
     }
 
-    public static void hideViews(){
-        ImageView imageView = (ImageView) rootView.findViewById(R.id.bouncer);
-        Button purchase = (Button) rootView.findViewById(R.id.purchase);
-        imageView.setVisibility(View.INVISIBLE);
-        purchase.setVisibility(View.INVISIBLE);
+    public static void hideViews() {
+        rootView.findViewById(R.id.bouncer).setVisibility(View.INVISIBLE);
+        rootView.findViewById(R.id.purchase).setVisibility(View.INVISIBLE);
     }
 
-    public static void showViews(){
-        ImageView imageView = (ImageView) rootView.findViewById(R.id.bouncer);
-        Button purchase = (Button) rootView.findViewById(R.id.purchase);
-        imageView.setVisibility(View.VISIBLE);
-        purchase.setVisibility(View.VISIBLE);
+    public static void showViews() {
+        rootView.findViewById(R.id.bouncer).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.purchase).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -73,8 +67,9 @@ public class NoVIPAccess extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.no_vip_access, container, false);
+
         SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
-        final SharedPreferences.Editor editor = prefs.edit();
+        SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("granted", 1);
         editor.apply();
 
@@ -82,154 +77,62 @@ public class NoVIPAccess extends Fragment {
         purchase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                restartForVIPAccess();
-                Intent preferences = new Intent("www.appawareinc.org.catparty.TESTPURCHASEACTIVITY");
-                startActivity(preferences);
-                editor.putInt("granted", 1);//1 for testing, 2 for production
-                editor.apply();
-//                final Dialog dialog = new Dialog(context);
-//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                dialog.setContentView(R.layout.restart_dialog);
-//                dialog.getWindow().setLayout(Math.round(280 * TwoRooms.densityMultiple),
-//                        Math.round(244 * TwoRooms.densityMultiple)); //width, height
-//
-//                Button yesDelete = (Button) dialog.findViewById(R.id.buttonOkay);
-//                yesDelete.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        restartForVIPAccess();
-//                        dialog.dismiss();
-//                    }
-//                });
-//                dialog.show();
+                try {
+                    onUpgradeAppButtonClicked();
+
+                } catch (NullPointerException e){
+                    e.printStackTrace();
+                }
             }
         });
 
-        BuildKey bk = new BuildKey();
-        String pubKey = bk.getKey();
-//        final List additionalSkuList = new LinkedList();
-//        additionalSkuList.add(ITEM_SKU);
-//        mHelper = new IabHelper(context, pubKey);
-//        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() { //TODO: comment out when using emulator
-//            @Override
-//            public void onIabSetupFinished(IabResult result) {
-//                if (!result.isSuccess()) {
-//                    Log.d("InAppBilling", "In-app Billing setup failed: " +
-//                            result);
-//                } else {
-//                    Log.d("InAppBilling", "In-app Billing is set up OK");
-//                    mHelper.queryInventoryAsync(mReceivedInventoryListener);
-//                }
-//            }
-//        });
+        BuildKey key = new BuildKey();
+        String base64EncodedPublicKey = key.getKey();
+
+
+        // Create the helper, passing it our context and the public key to verify signatures with
+        Log.d(TAG, "Creating IAB helper.");
+        mHelper = new IabHelper(context, base64EncodedPublicKey);
+
+        // enable debug logging (for a production application, you should set this to false).
+        mHelper.enableDebugLogging(true);
+
+        // Start setup. This is asynchronous and the specified listener
+        // will be called once setup completes.
+        Log.d(TAG, "Starting setup.");
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(IabResult result) {
+                Log.d(TAG, "Setup finished.");
+
+                if (!result.isSuccess()) {
+                    // Oh noes, there was a problem.
+                    return;
+                }
+
+                // Have we been disposed of in the meantime? If so, quit.
+                if (mHelper == null) return;
+
+                // IAB is fully set up. Now, let's get an inventory of stuff we own.
+                Log.d(TAG, "Setup successful. Querying inventory.");
+                mHelper.queryInventoryAsync(mGotInventoryListener);
+            }
+        });
 
         return rootView;
     }
-//
-//    public void restartForVIPAccess(){
-//        mHelper.launchPurchaseFlow((Activity)context, ITEM_SKU, 10001, mPurchaseFinishedListener, "mypurchasetoken");
-////        Intent intent = context.getPackageManager()
-////                .getLaunchIntentForPackage( context.getPackageName() );
-////
-////        PendingIntent pending = PendingIntent.getActivity(
-////                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-////        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-////        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
-////        System.exit(2);
-//    }
-//
-//    public void consumeItem() {
-//        mHelper.queryInventoryAsync(mReceivedInventoryListener);
-//    }
-//
-//    IabHelper.QueryInventoryFinishedListener mReceivedInventoryListener
-//            = new IabHelper.QueryInventoryFinishedListener() {
-//        public void onQueryInventoryFinished(IabResult result,
-//                                             Inventory inventory) {
-//
-//            if (result.isFailure()) {
-//                // Handle failure
-//            } else {
-//                Purchase donation = inventory.getPurchase(ITEM_SKU);
-//                if (donation != null && verifyDeveloperPayload(donation)) {
-//                    mHelper.consumeAsync(inventory.getPurchase(ITEM_SKU),
-//                            mConsumeFinishedListener);
-//                }
-//            }
-//        }
-//    };
-//
-//    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
-//            new IabHelper.OnConsumeFinishedListener() {
-//                public void onConsumeFinished(Purchase purchase,
-//                                              IabResult result) {
-//
-//                    if (result.isSuccess()) {
-//                        Intent intent = context.getPackageManager()
-//                                .getLaunchIntentForPackage( context.getPackageName() );
-//
-//                        PendingIntent pending = PendingIntent.getActivity(
-//                                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-//                        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//                        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
-//                        System.exit(2);
-//                    } else {
-//                        // handle error
-//                    }
-//                }
-//            };
-//
-//    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
-//            = new IabHelper.OnIabPurchaseFinishedListener() {
-//        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-//            if (result.isFailure()) {
-//                // Handle error
-//                return;
-//            }
-//            else if (purchase.getSku().equals(ITEM_SKU)) {
-//                mHelper.consumeAsync(purchase, mConsumeFinishedListener);
-//            }
-//        }
-//    };
-//
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        if (mHelper != null) mHelper.dispose();
-//        mHelper = null;
-//    }
-//
-//    /** Verifies the developer payload of a purchase. */
-//    boolean verifyDeveloperPayload(Purchase p) {
-//        String payload = p.getDeveloperPayload();
-//
-//        /*
-//         * TODO: verify that the developer payload of the purchase is correct. It will be
-//         * the same one that you sent when initiating the purchase.
-//         *
-//         * WARNING: Locally generating a random string when starting a purchase and
-//         * verifying it here might seem like a good approach, but this will fail in the
-//         * case where the user purchases an item on one device and then uses your app on
-//         * a different device, because on the other device you will not have access to the
-//         * random string you originally generated.
-//         *
-//         * So a good developer payload has these characteristics:
-//         *
-//         * 1. If two different users purchase an item, the payload is different between them,
-//         *    so that one user's purchase can't be replayed to another user.
-//         *
-//         * 2. The payload must be such that you can verify it even when the app wasn't the
-//         *    one who initiated the purchase flow (so that items purchased by the user on
-//         *    one device work on other devices owned by the user).
-//         *
-//         * Using your own server to store and verify developer payloads across app
-//         * installations is recommended.
-//         */
-//
-//        return true;
-//    }
 
-    public static void catsShunYou(){
+    public void restartForVIPAccess(){
+        Intent intent = context.getPackageManager()
+                .getLaunchIntentForPackage( context.getPackageName() );
+
+        PendingIntent pending = PendingIntent.getActivity(
+                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        manager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pending);
+        System.exit(2);
+    }
+
+    public static void catsShunYou() {
         ImageView imageView = (ImageView) rootView.findViewById(R.id.bouncer);
         Button purchase = (Button) rootView.findViewById(R.id.purchase);
 
@@ -266,25 +169,15 @@ public class NoVIPAccess extends Fragment {
         mListener = null;
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-//        consumeItem();
-        if(mHelper != null){
-            mHelper.dispose();
-        }
-        mHelper = null;
-    }
-
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    private static class MyAnimationListener implements Animation.AnimationListener{
+    private static class MyAnimationListener implements Animation.AnimationListener {
         ViewGroup.LayoutParams layoutParams;
         ImageView tiger;
 
-        public MyAnimationListener(ImageView imageView){
+        public MyAnimationListener(ImageView imageView) {
             tiger = imageView;
             layoutParams = tiger.getLayoutParams();
             layoutParams.width = Math.round(TwoRooms.screenWidthDp * TwoRooms.densityMultiple);
@@ -308,10 +201,10 @@ public class NoVIPAccess extends Fragment {
         }
     }
 
-    private static class MyOtherAnimationListener implements Animation.AnimationListener{
+    private static class MyOtherAnimationListener implements Animation.AnimationListener {
         private Button purchase;
 
-        public MyOtherAnimationListener(Button button){
+        public MyOtherAnimationListener(Button button) {
             purchase = button;
         }
 
@@ -332,16 +225,168 @@ public class NoVIPAccess extends Fragment {
         }
     }
 
+    // Listener that's called when we finish querying the items and subscriptions we own
+    IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+        public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+            Log.d(TAG, "Query inventory finished.");
+
+            // Have we been disposed of in the meantime? If so, quit.
+            if (mHelper == null) return;
+
+            // Is it a failure?
+            if (result.isFailure()) {
+                return;
+            }
+
+            Log.d(TAG, "Query inventory was successful.");
+
+            /*
+             * Check for items we own. Notice that for each purchase, we check
+             * the developer payload to see if it's correct! See
+             * verifyDeveloperPayload().
+             */
+
+            // Do we have the premium upgrade?
+            Purchase premiumPurchase = inventory.getPurchase(SKU_PREMIUM);
+            mIsPremium = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
+            Log.d(TAG, "User is " + (mIsPremium ? "PREMIUM" : "NOT PREMIUM"));
+            if(mIsPremium) mHelper.consumeAsync(premiumPurchase, mConsumeFinishedListener);
+
+            Log.d(TAG, "Initial inventory query finished; enabling main UI.");
+        }
+    };
+
+    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener = new IabHelper.OnConsumeFinishedListener() {
+        public void onConsumeFinished(Purchase purchase, IabResult result) {
+            Log.d(TAG, "Consumption finished. Purchase: " + purchase + ", result: " + result);
+
+            // if we were disposed of in the meantime, quit.
+            if (mHelper == null) return;
+
+            // We know this is the "gas" sku because it's the only one we consume,
+            // so we don't check which sku was consumed. If you have more than one
+            // sku, you probably should check...
+            if (result.isSuccess()) {
+                // successfully consumed, so we apply the effects of the item in our
+                // game world's logic, which in our case means filling the gas tank a bit
+                Log.d(TAG, "Consumption successful. Provisioning.");
+            }
+
+            Log.d(TAG, "End consumption flow.");
+        }
+    };
+
+
+    // User clicked the "Upgrade to Premium" button.
+    public void onUpgradeAppButtonClicked() {
+        Log.d(TAG, "Upgrade button clicked; launching purchase flow for upgrade.");
+
+        /* TODO: for security, generate your payload here for verification. See the comments on
+         *        verifyDeveloperPayload() for more info. Since this is a SAMPLE, we just use
+         *        an empty string, but on a production app you should carefully generate this. */
+        String payload = "";
+
+        mHelper.launchPurchaseFlow(getActivity(), SKU_PREMIUM, RC_REQUEST,
+                mPurchaseFinishedListener, payload);
+    }
+
+    /**
+     * Verifies the developer payload of a purchase.
+     */
+    boolean verifyDeveloperPayload(Purchase p) {
+        String payload = p.getDeveloperPayload();
+
+        /*
+         * TODO: verify that the developer payload of the purchase is correct. It will be
+         * the same one that you sent when initiating the purchase.
+         *
+         * WARNING: Locally generating a random string when starting a purchase and
+         * verifying it here might seem like a good approach, but this will fail in the
+         * case where the user purchases an item on one device and then uses your app on
+         * a different device, because on the other device you will not have access to the
+         * random string you originally generated.
+         *
+         * So a good developer payload has these characteristics:
+         *
+         * 1. If two different users purchase an item, the payload is different between them,
+         *    so that one user's purchase can't be replayed to another user.
+         *
+         * 2. The payload must be such that you can verify it even when the app wasn't the
+         *    one who initiated the purchase flow (so that items purchased by the user on
+         *    one device work on other devices owned by the user).
+         *
+         * Using your own server to store and verify developer payloads across app
+         * installations is recommended.
+         */
+
+        return true;
+    }
+
+    // Callback for when a purchase is finished
+    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+            Log.d(TAG, "Purchase finished: " + result + ", purchase: " + purchase);
+
+            // if we were disposed of in the meantime, quit.
+            if (mHelper == null) return;
+
+            if (result.isFailure()) {
+                return;
+            }
+            if (!verifyDeveloperPayload(purchase)) {
+                return;
+            }
+
+            Log.d(TAG, "Purchase successful.");
+
+            if (purchase.getSku().equals(SKU_PREMIUM)) {
+                // bought the premium upgrade!
+                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
+                mIsPremium = true;
+
+                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("granted", 2);//1 for testing, 2 for production
+                editor.apply();
+
+                final Dialog dialog = new Dialog(context);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.restart_dialog);
+                dialog.getWindow().setLayout(Math.round(280 * TwoRooms.densityMultiple),
+                        Math.round(244 * TwoRooms.densityMultiple)); //width, height
+
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        restartForVIPAccess();
+                    }
+                });
+
+                Button yesDelete = (Button) dialog.findViewById(R.id.buttonOkay);
+                yesDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        }
+    };
+
+    // We're being destroyed. It's important to dispose of the helper here!
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(mHelper == null) return;
-        // Pass on the activity result to the helper for handling
-        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-            // not handled, so handle it ourselves (here's where you'd
-            // perform any handling of activity results not related to in-app
-            // billing...
-            super.onActivityResult(requestCode, resultCode, data);
+    public void onDestroy() {
+        super.onDestroy();
+
+        // very important:
+        Log.d(TAG, "Destroying helper.");
+        if (mHelper != null) {
+            mHelper.dispose();
+            mHelper = null;
         }
     }
 }
+

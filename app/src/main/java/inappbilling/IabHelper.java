@@ -72,7 +72,7 @@ import java.util.List;
 public class IabHelper {
     // Is debug logging enabled?
     boolean mDebugLog = false;
-    String mDebugTag = "IabHelper";
+    String mDebugTag = "xkcd IabHelper";
 
     // Is setup done?
     boolean mSetupDone = false;
@@ -147,7 +147,6 @@ public class IabHelper {
 
     // some fields on the getSkuDetails response bundle
     public static final String GET_SKU_DETAILS_ITEM_LIST = "ITEM_ID_LIST";
-    public static final String GET_SKU_DETAILS_ITEM_TYPE_LIST = "ITEM_TYPE_LIST";
 
     /**
      * Creates an instance. After creation, it will not yet be ready to use. You must perform
@@ -169,11 +168,6 @@ public class IabHelper {
     /**
      * Enables or disable debug logging through LogCat.
      */
-    public void enableDebugLogging(boolean enable, String tag) {
-        checkNotDisposed();
-        mDebugLog = enable;
-        mDebugTag = tag;
-    }
 
     public void enableDebugLogging(boolean enable) {
         checkNotDisposed();
@@ -335,7 +329,11 @@ public class IabHelper {
 
     public void launchPurchaseFlow(Activity act, String sku, int requestCode,
             OnIabPurchaseFinishedListener listener, String extraData) {
-        launchPurchaseFlow(act, sku, ITEM_TYPE_INAPP, requestCode, listener, extraData);
+        try {
+            launchPurchaseFlow(act, sku, ITEM_TYPE_INAPP, requestCode, listener, extraData);
+        } catch (IllegalStateException e){
+            e.printStackTrace();
+        }
     }
 
     public void launchSubscriptionPurchaseFlow(Activity act, String sku, int requestCode,
@@ -373,14 +371,6 @@ public class IabHelper {
         flagStartAsync("launchPurchaseFlow");
         IabResult result;
 
-        if (itemType.equals(ITEM_TYPE_SUBS) && !mSubscriptionsSupported) {
-            IabResult r = new IabResult(IABHELPER_SUBSCRIPTIONS_NOT_AVAILABLE,
-                    "Subscriptions are not available.");
-            flagEndAsync();
-            if (listener != null) listener.onIabPurchaseFinished(r, null);
-            return;
-        }
-
         try {
             logDebug("Constructing buy intent for " + sku + ", item type: " + itemType);
             Bundle buyIntentBundle = mService.getBuyIntent(3, mContext.getPackageName(), sku, itemType, extraData);
@@ -399,9 +389,7 @@ public class IabHelper {
             mPurchaseListener = listener;
             mPurchasingItemType = itemType;
             act.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                                           requestCode, new Intent(),
-                                           Integer.valueOf(0), Integer.valueOf(0),
-                                           Integer.valueOf(0));
+                    requestCode, new Intent(), 0, 0, 0);
         }
         catch (SendIntentException e) {
             logError("SendIntentException while launching purchase flow for sku " + sku);
@@ -525,7 +513,7 @@ public class IabHelper {
     /**
      * Queries the inventory. This will query all owned items from the server, as well as
      * information on additional skus, if specified. This method may block or take long to execute.
-     * Do not call from a UI thread. For that, use the non-blocking version {@link #refreshInventoryAsync}.
+     * Do not call from a UI thread. For that, use the non-blocking version {refreshInventoryAsync}.
      *
      * @param querySkuDetails if true, SKU details (price, description, etc) will be queried as well
      *     as purchase information.
@@ -727,17 +715,6 @@ public class IabHelper {
         List<Purchase> purchases = new ArrayList<Purchase>();
         purchases.add(purchase);
         consumeAsyncInternal(purchases, listener, null);
-    }
-
-    /**
-     * Same as {@link consumeAsync}, but for multiple items at once.
-     * @param purchases The list of PurchaseInfo objects representing the purchases to consume.
-     * @param listener The listener to notify when the consumption operation finishes.
-     */
-    public void consumeAsync(List<Purchase> purchases, OnConsumeMultiFinishedListener listener) {
-        checkNotDisposed();
-        checkSetupDone("consume");
-        consumeAsyncInternal(purchases, null, listener);
     }
 
     /**

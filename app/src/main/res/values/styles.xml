@@ -6,6 +6,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:textColorPrimary">@color/cpgreen</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@null</item>
     </style>
 
     <style name="buttons" parent="android:Widget.Button">
