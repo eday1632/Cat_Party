@@ -38,7 +38,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                 MainParty.showProgressSpinner();
                 TwoRooms.setBackgroundImage(getResourceID(background), context.getResources());
             }
-            MainParty.recyclerView.setVisibility(View.VISIBLE);
+            MainParty.showRecyclerView();
             if(VIPParty.isActive) {
                 VIPParty.showViews();
             } else {
@@ -46,7 +46,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             }
 
         } else {
-            MainParty.recyclerView.setVisibility(View.INVISIBLE);
+            MainParty.hideRecyclerView();
             MainParty.hideProgressSpinner();
             if(VIPParty.isActive) {
                 VIPParty.hideViews();

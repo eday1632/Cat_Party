@@ -36,16 +36,23 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
     private Context context;
     private Activity activity;
     private HashSet<String> seenVideos;
+    private Storage storage;
 
     public VideoLoaderTask(Context context, Activity activity) {
         this.context = context;
         this.activity = activity;
+        storage = new Storage(context);
+    }
+
+    public VideoLoaderTask(Context context, Activity activity, Storage passedStorage) {
+        this.context = context;
+        this.activity = activity;
+        storage = passedStorage;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        Storage storage = new Storage(context);
         seenVideos = storage.accessVideos();
     }
 
@@ -64,7 +71,6 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         super.onPostExecute(gifs);
 
         if(gifs != null) {
-            Storage storage = new Storage(context);
             storage.increaseOffset();
             storage.saveVideos(seenVideos);
             MainParty.mainPartyAdapter.setGifs(gifs);
@@ -73,7 +79,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         } else {
             Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
             BuildURL buildURL = new BuildURL(context);
-            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
+            new VideoLoaderTask(context, activity, storage).execute(buildURL.getURL());
         }
     }
 

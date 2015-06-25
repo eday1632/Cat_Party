@@ -37,7 +37,6 @@ import circleprogressbar.CircleProgressBar;
 * screen ends. */
 public class MainParty extends Fragment {
 
-    public static SnappyRecyclerView recyclerView;
     public static ViewHolderAdapter mainPartyAdapter;
     private OnFragmentInteractionListener mListener;
     private boolean confirmSave = true;
@@ -90,7 +89,7 @@ public class MainParty extends Fragment {
 
         mainPartyAdapter = new ViewHolderAdapter(context, activity);
 
-        recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.main_recycler_view);
+        final SnappyRecyclerView recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.main_recycler_view);
         recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(mainPartyAdapter);
 
@@ -106,7 +105,7 @@ public class MainParty extends Fragment {
                             public void onShareBySwipeUp(SnappyRecyclerView recyclerView, int shareThis) {
                                 logAnalyticsEvent("MainParty", "Share");
                                 GifItem item = mainPartyAdapter.returnItem(shareThis);
-                                sendGif(item.getGuestAudition());
+                                sendGif(item.getGuestAudition(), recyclerView);
                             }
 
                             @Override
@@ -160,6 +159,14 @@ public class MainParty extends Fragment {
 
     public static void showProgressSpinner(){
         rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+    }
+
+    public static void hideRecyclerView(){
+        rootView.findViewById(R.id.main_recycler_view).setVisibility(View.GONE);
+    }
+
+    public static void showRecyclerView(){
+        rootView.findViewById(R.id.main_recycler_view).setVisibility(View.VISIBLE);
     }
 
     private void confirmSaveOnce(){
@@ -268,7 +275,7 @@ public class MainParty extends Fragment {
 
     /*sendGif takes the url of a gif and returns a share intent that activates the share function
     * in Android. A pop-down menu appears and shows the apps the user can use to share the gif*/
-    public void sendGif(String url) {
+    public void sendGif(String url, SnappyRecyclerView recyclerView) {
         LinearLayoutManager llm = (LinearLayoutManager) recyclerView.getLayoutManager();
         ViewHolderAdapter.SimpleViewHolder svh =
                 (ViewHolderAdapter.SimpleViewHolder) recyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());

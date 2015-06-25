@@ -113,12 +113,12 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                 SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
                 SharedPreferences instructions = context.getSharedPreferences("vip_instructions", 0);
 
-//                if (prefs.getInt("granted", 0) == 1 && position == 1) {
-//                    NoVIPAccess.catsShunYou();
-//                    Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_LONG).show();
-//                } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
+                if (prefs.getInt("granted", 0) == 1 && position == 1) {
+                    NoVIPAccess.catsShunYou();
+                    Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_LONG).show();
+                } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
                     VIPParty.showInitialInstruction();
-//                }
+                }
             }
 
             @Override
@@ -378,12 +378,12 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
             if (position == 0) {
                 return MainParty.newInstance(context);
             } else {
-//                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
-//                if (prefs.getInt("granted", 1) == 2) { // == 1 to reset, == 2 otherwise
+                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
+                if (prefs.getInt("granted", 1) == 2) { // == 1 to reset, == 2 otherwise
                     return VIPParty.newInstance(context);
-//                } else {
-//                    return NoVIPAccess.newInstance(context);
-//                }
+                } else {
+                    return NoVIPAccess.newInstance(context);
+                }
             }
         }
 

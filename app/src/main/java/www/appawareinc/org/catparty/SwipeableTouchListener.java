@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -89,6 +90,7 @@ public class SwipeableTouchListener implements RecyclerView.OnItemTouchListener 
                         if(firstFull > firstPart) FPviewHolder.hideAllViews();
                         if(lastFull < lastPart) LPviewHolder.hideAllViews();
                     }
+                    Log.d("xkcd RecyclerView", "Scrolled!");
                 }
             }
         });

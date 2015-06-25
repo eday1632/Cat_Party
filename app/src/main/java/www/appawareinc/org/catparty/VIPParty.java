@@ -192,6 +192,7 @@ public class VIPParty extends Fragment {
         if(svh != null) {
             returnPosition = svh.getPosition();
             recyclerView.removeAllViewsInLayout();
+            vipAdapter = null;
         }
     }
 

@@ -56,7 +56,7 @@ public class Splash extends Activity {
             public void run() {
                 try {
                     synchronized (timer) {
-                        timer.wait(300); //TODO: 3000 for production
+                        timer.wait(3000); //TODO: 3000 for production
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
