@@ -21,6 +21,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,14 +38,17 @@ public class Splash extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_splash);
+
+        OverrideFonts.setDefaultFont(this, "MONOSPACE", "newton.ttf");
 
         if(myServiceIsRunning(JinglePlayer.class)) {
             //do nothing;
         } else {
             Intent jinglePlayer = new Intent(this, JinglePlayer.class);
-//            startService(jinglePlayer);
+            startService(jinglePlayer);
         }
 
         final View decorView = getWindow().getDecorView();

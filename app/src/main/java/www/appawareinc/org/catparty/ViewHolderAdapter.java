@@ -2,6 +2,7 @@ package www.appawareinc.org.catparty;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.provider.SyncStateContract;
@@ -19,7 +20,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import circleprogressbar.CircleProgressBar;
@@ -73,6 +79,7 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
+                    if(url.contains("blank.html")) return;
                     loaded = true;
                     int screenMiddle = Math.round(TwoRooms.screenWidthDp * TwoRooms.densityMultiple / 2);
                     if (container.getLeft() < screenMiddle && container.getRight() > screenMiddle) {
@@ -229,7 +236,6 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
         holder.resetLoadStatus();
         try{
-//            holder.gifView.loadUrl(SyncStateContract.Constants.CONTENT_DIRECTORY);
             holder.gifView.loadUrl(item.getGuestAudition());
 //            holder.gifView.loadUrl("http://www.google.com");
         } catch (Exception e){

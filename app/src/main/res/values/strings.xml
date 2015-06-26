@@ -17,6 +17,7 @@
     <string name="vips_cleared">VIP guests removed</string>
     <string name="delete_vips">You will lose all saved GIFs.</string>
     <string name="thank_you">Thank you for your donation!</string>
+    <string name="donate_amount">Please select an amount to donate</string>
     <string name="restart">Cat Party will now update and restart</string>
     <string name="trouble_receiving_gifs">Trouble receiving gifs...</string>
     <string name="pref_background">cat_party_background_image</string>

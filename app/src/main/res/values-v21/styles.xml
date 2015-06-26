@@ -11,6 +11,7 @@
         <item name="android:textColorPrimary">@color/cpgreen</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowBackground">@null</item>
+        <item name="android:typeface">monospace</item>
     </style>
 
     <style name="buttons" parent="android:Widget.Material.Button">

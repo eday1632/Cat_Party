@@ -1,0 +1,77 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="24dp"
+        android:lineSpacingExtra="3dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="@string/donate_amount"
+        android:id="@+id/textPitch" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioGroup"
+        android:layout_below="@+id/textPitch"
+        android:layout_alignLeft="@+id/textPitch"
+        android:layout_alignStart="@+id/textPitch">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.00 USD"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:id="@+id/radio1" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="2.00 USD"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:id="@+id/radio2" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5.00 USD"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:id="@+id/radio5" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10.00 USD"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:id="@+id/radio10" />
+    </RadioGroup>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:background="@android:color/transparent"
+        android:textColor="@color/cpbluedark"
+        android:text="@string/okay"
+        android:id="@+id/buttonOkay"
+        android:layout_marginBottom="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

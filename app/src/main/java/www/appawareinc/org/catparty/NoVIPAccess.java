@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 
 import inappbilling.BuildKey;
 import inappbilling.IabHelper;
@@ -33,9 +34,8 @@ public class NoVIPAccess extends Fragment {
     private static Context context;
     private static View rootView;
     boolean mIsPremium = false;
-    static final String TAG = "xkcd NoVIPAccess";
-    static final String SKU_PREMIUM = "vip_access";
-    static final int RC_REQUEST = 10001;
+    static String SKU_PREMIUM = "vip_access2";
+    static final int RC_REQUEST = 95035;
     public static IabHelper mHelper;
 
     public static NoVIPAccess newInstance(Context mContext) {
@@ -90,18 +90,12 @@ public class NoVIPAccess extends Fragment {
 
 
         // Create the helper, passing it our context and the public key to verify signatures with
-        Log.d(TAG, "Creating IAB helper.");
         mHelper = new IabHelper(context, base64EncodedPublicKey);
-
-        // enable debug logging (for a production application, you should set this to false).
-        mHelper.enableDebugLogging(true);
 
         // Start setup. This is asynchronous and the specified listener
         // will be called once setup completes.
-        Log.d(TAG, "Starting setup.");
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
             public void onIabSetupFinished(IabResult result) {
-                Log.d(TAG, "Setup finished.");
 
                 if (!result.isSuccess()) {
                     // Oh noes, there was a problem.
@@ -112,7 +106,6 @@ public class NoVIPAccess extends Fragment {
                 if (mHelper == null) return;
 
                 // IAB is fully set up. Now, let's get an inventory of stuff we own.
-                Log.d(TAG, "Setup successful. Querying inventory.");
                 mHelper.queryInventoryAsync(mGotInventoryListener);
             }
         });
@@ -227,7 +220,6 @@ public class NoVIPAccess extends Fragment {
     // Listener that's called when we finish querying the items and subscriptions we own
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
-            Log.d(TAG, "Query inventory finished.");
 
             // Have we been disposed of in the meantime? If so, quit.
             if (mHelper == null) return;
@@ -236,9 +228,6 @@ public class NoVIPAccess extends Fragment {
             if (result.isFailure()) {
                 return;
             }
-
-            Log.d(TAG, "Query inventory was successful.");
-
             /*
              * Check for items we own. Notice that for each purchase, we check
              * the developer payload to see if it's correct! See
@@ -248,16 +237,13 @@ public class NoVIPAccess extends Fragment {
             // Do we have the premium upgrade?
             Purchase premiumPurchase = inventory.getPurchase(SKU_PREMIUM);
             mIsPremium = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
-            Log.d(TAG, "User is " + (mIsPremium ? "PREMIUM" : "NOT PREMIUM"));
             if(mIsPremium) mHelper.consumeAsync(premiumPurchase, mConsumeFinishedListener);
 
-            Log.d(TAG, "Initial inventory query finished; enabling main UI.");
         }
     };
 
     IabHelper.OnConsumeFinishedListener mConsumeFinishedListener = new IabHelper.OnConsumeFinishedListener() {
         public void onConsumeFinished(Purchase purchase, IabResult result) {
-            Log.d(TAG, "Consumption finished. Purchase: " + purchase + ", result: " + result);
 
             // if we were disposed of in the meantime, quit.
             if (mHelper == null) return;
@@ -268,25 +254,51 @@ public class NoVIPAccess extends Fragment {
             if (result.isSuccess()) {
                 // successfully consumed, so we apply the effects of the item in our
                 // game world's logic, which in our case means filling the gas tank a bit
-                Log.d(TAG, "Consumption successful. Provisioning.");
             }
-
-            Log.d(TAG, "End consumption flow.");
         }
     };
 
 
     // User clicked the "Upgrade to Premium" button.
     public void onUpgradeAppButtonClicked() {
-        Log.d(TAG, "Upgrade button clicked; launching purchase flow for upgrade.");
 
         /* TODO: for security, generate your payload here for verification. See the comments on
          *        verifyDeveloperPayload() for more info. Since this is a SAMPLE, we just use
          *        an empty string, but on a production app you should carefully generate this. */
-        String payload = "";
+        final String payload = "";
 
-        mHelper.launchPurchaseFlow(getActivity(), SKU_PREMIUM, RC_REQUEST,
-                mPurchaseFinishedListener, payload);
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.donation_amount_dialog);
+        dialog.getWindow().setLayout(Math.round(280 * TwoRooms.densityMultiple),
+                Math.round(320 * TwoRooms.densityMultiple)); //width, height
+
+        RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioGroup);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio1) {
+                    SKU_PREMIUM = "vip_access";
+                } else if (checkedId == R.id.radio2) {
+                    SKU_PREMIUM = "vip_access2";
+                } else if (checkedId == R.id.radio5) {
+                    SKU_PREMIUM = "vip_access5";
+                } else if (checkedId == R.id.radio10) {
+                    SKU_PREMIUM = "vip_access10";
+                }
+            }
+        });
+
+        Button yesDelete = (Button) dialog.findViewById(R.id.buttonOkay);
+        yesDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHelper.launchPurchaseFlow(getActivity(), SKU_PREMIUM, RC_REQUEST,
+                        mPurchaseFinishedListener, payload);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     /**
@@ -324,7 +336,6 @@ public class NoVIPAccess extends Fragment {
     // Callback for when a purchase is finished
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-            Log.d(TAG, "Purchase finished: " + result + ", purchase: " + purchase);
 
             // if we were disposed of in the meantime, quit.
             if (mHelper == null) return;
@@ -336,11 +347,8 @@ public class NoVIPAccess extends Fragment {
                 return;
             }
 
-            Log.d(TAG, "Purchase successful.");
-
             if (purchase.getSku().equals(SKU_PREMIUM)) {
                 // bought the premium upgrade!
-                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
                 mIsPremium = true;
 
                 SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
@@ -381,7 +389,6 @@ public class NoVIPAccess extends Fragment {
         super.onDestroy();
 
         // very important:
-        Log.d(TAG, "Destroying helper.");
         if (mHelper != null) {
             mHelper.dispose();
             mHelper = null;
