@@ -60,7 +60,6 @@ public class SnappyRecyclerView extends RecyclerView {
             if (velocityX > 0) smoothScrollBy(scrollDistanceLeft, 0);
             else smoothScrollBy(-scrollDistanceRight, 0);
         }
-        Log.d("xkcd RecyclerView", "Flung!");
         return true;
     }
 }

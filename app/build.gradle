@@ -23,7 +23,7 @@ android {
         applicationId "www.appawareinc.org.catparty"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 7
+        versionCode 9
         versionName "1.0"
     }
 

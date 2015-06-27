@@ -42,8 +42,6 @@ public class Splash extends Activity {
 
         setContentView(R.layout.activity_splash);
 
-        OverrideFonts.setDefaultFont(this, "MONOSPACE", "newton.ttf");
-
         if(myServiceIsRunning(JinglePlayer.class)) {
             //do nothing;
         } else {

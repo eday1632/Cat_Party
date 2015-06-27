@@ -90,7 +90,6 @@ public class SwipeableTouchListener implements RecyclerView.OnItemTouchListener 
                         if(firstFull > firstPart) FPviewHolder.hideAllViews();
                         if(lastFull < lastPart) LPviewHolder.hideAllViews();
                     }
-                    Log.d("xkcd RecyclerView", "Scrolled!");
                 }
             }
         });
