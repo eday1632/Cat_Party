@@ -15,11 +15,9 @@ import android.widget.Toast;
 public class NetworkReceiver extends BroadcastReceiver {
 
     private boolean theWifiIsReturning = false;
-    private Activity activity;
     private Context context;
 
-    public NetworkReceiver(Activity activity, Context context){
-        this.activity = activity;
+    public NetworkReceiver(Context context){
         this.context = context;
     }
 
@@ -33,8 +31,7 @@ public class NetworkReceiver extends BroadcastReceiver {
         NetworkInfo networkInfo = conn.getActiveNetworkInfo();
         if(networkInfo != null) {
             if(theWifiIsReturning) {
-                BuildURL buildURL = new BuildURL(context);
-                new VideoLoaderTask(context, activity).execute(buildURL.getURL());
+                runTaskInBackground("buildURL");
                 MainParty.showProgressSpinner();
                 TwoRooms.setBackgroundImage(getResourceID(background), context.getResources());
             }
@@ -59,6 +56,12 @@ public class NetworkReceiver extends BroadcastReceiver {
 
             Toast.makeText(context, R.string.no_internet, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        context.startService(serviceIntent);
     }
 
     private int getWashedResourceID(String image){

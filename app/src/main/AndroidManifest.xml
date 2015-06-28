@@ -41,6 +41,10 @@
         android:enabled="true"
         android:exported="false"/>
     <service android:name="www.appawareinc.org.catparty.JinglePlayer" />
+
+    <service
+        android:name="www.appawareinc.org.catparty.MultiIntentService"
+        android:exported="false"/>
     
     <activity
         android:name=".Splash"

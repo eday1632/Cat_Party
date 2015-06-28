@@ -1,6 +1,7 @@
 package www.appawareinc.org.catparty;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -205,22 +207,30 @@ public class MainParty extends Fragment {
         }
     }
 
+    private void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        context.startService(serviceIntent);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
+        LocalBroadcastManager.getInstance(context).registerReceiver(privateReceiver,
+                new IntentFilter("buildURL"));
+
         if (isOnline() && firstTime) {
             firstTime = false;
             rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            BuildURL buildURL = new BuildURL(context);
-            new VideoLoaderTask(context, getActivity()).execute(buildURL.getURL());
+            runTaskInBackground("buildURL");
         } else if (!isOnline()) {
             rootView.findViewById(R.id.main_recycler_view).setVisibility(View.INVISIBLE);
             rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
         }
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver(getActivity(), context);
+        receiver = new NetworkReceiver(context);
         context.registerReceiver(receiver, filter);
 
         isActive = true;
@@ -390,6 +400,13 @@ public class MainParty extends Fragment {
         }
     }
 
+    private BroadcastReceiver privateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            new VideoLoaderTask(context, getActivity()).execute(intent.getStringExtra("URL"));
+        }
+    };
+
     @Override
     public void onStop() {
         super.onStop();
@@ -397,6 +414,10 @@ public class MainParty extends Fragment {
         dontPlayGifsWhenOffscreen();
 
         try {
+            if(privateReceiver != null){
+                context.unregisterReceiver(privateReceiver);
+                privateReceiver = null;
+            }
             if(receiver != null) {
                 context.unregisterReceiver(receiver);
                 receiver = null;

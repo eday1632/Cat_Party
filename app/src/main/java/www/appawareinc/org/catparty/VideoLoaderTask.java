@@ -2,7 +2,9 @@ package www.appawareinc.org.catparty;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -51,13 +53,8 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
     }
 
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        seenVideos = storage.accessVideos();
-    }
-
-    @Override
     protected ArrayList<GifItem> doInBackground(String... url) {
+        seenVideos = storage.accessVideos();
         try {
             return getGifs(url[0]);
         } catch (Exception e) {
@@ -71,7 +68,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         super.onPostExecute(gifs);
 
         if(gifs != null) {
-            storage.increaseOffset();
+            runTaskInBackground("increaseOffset");
             storage.saveVideos(seenVideos);
             MainParty.mainPartyAdapter.setGifs(gifs);
             MainParty.hideProgressSpinner();
@@ -82,6 +79,14 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             new VideoLoaderTask(context, activity, storage).execute(buildURL.getURL());
         }
     }
+
+    private void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        context.startService(serviceIntent);
+    }
+
+
 
     private void logAnalyticsEvent(int size){
         Tracker t = ((AnalyticsTool) activity.getApplication()).getTracker(

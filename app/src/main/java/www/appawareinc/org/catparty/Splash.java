@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.StrictMode;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +40,17 @@ public class Splash extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build());
+
+        runTaskInBackground("crashlytics");
 
         setContentView(R.layout.activity_splash);
 
@@ -84,21 +96,7 @@ public class Splash extends Activity {
         animation.setAnimationListener(new MyAnimationListener());
         catIcon.startAnimation(animation);
 
-        SharedPreferences prefs = getSharedPreferences("unwanted_gifs", 0);
-        SharedPreferences.Editor editor = prefs.edit();
-        if (prefs.getBoolean("dontloadagain", true)) {
-            Resources resources = getResources();
-            try {
-                //Load the file from the raw folder - don't forget to OMIT the extension
-                Storage storage = new Storage(this);
-                storage.saveVideos(LoadFile("unwanted_gifs", resources));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            editor.putBoolean("dontloadagain", false);
-            editor.apply();
-        }
+        runTaskInBackground("unwanted");
     }
 
     private boolean myServiceIsRunning(Class<?> serviceClass) {
@@ -111,26 +109,10 @@ public class Splash extends Activity {
         return false;
     }
 
-    private HashSet<String> LoadFile(String fileName, Resources resources) throws IOException {
-        //Create a InputStream to read the file into
-        InputStream iS;
-
-        //get the resource id from the file name
-        int rID = resources.getIdentifier("www.appawareinc.org.catparty:raw/"+fileName, null, null);
-        //get the file as a stream
-        iS = resources.openRawResource(rID);
-
-        InputStreamReader inputStreamReader = new InputStreamReader(iS);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        String inputLine = "";
-        HashSet<String> unwantedGifs = new HashSet<>();
-
-        while((inputLine = bufferedReader.readLine()) != null){
-            unwantedGifs.add(inputLine);
-        }
-        bufferedReader.close();
-
-        return unwantedGifs;
+    private void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(this, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        startService(serviceIntent);
     }
 
     private static class MyAnimationListener implements Animation.AnimationListener{

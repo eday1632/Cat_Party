@@ -1,11 +1,15 @@
 package www.appawareinc.org.catparty;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.provider.SyncStateContract;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -249,9 +253,14 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
     private void getMoreVideosIfNeeded(int position){
         if (position == getItemCount() - 3) {
-            BuildURL buildURL = new BuildURL(context);
-            new VideoLoaderTask(context, activity).execute(buildURL.getURL());
+            runTaskInBackground("buildURL");
         }
+    }
+
+    private void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        context.startService(serviceIntent);
     }
 
     /* If the bound view wasn't previously displayed on screen, it's animated*/

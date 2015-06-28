@@ -1,6 +1,7 @@
 package www.appawareinc.org.catparty;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
 /* This class builds the URL that we query to return videos. */
@@ -17,6 +18,7 @@ public class BuildURL {
     /*builds the url we use to access gifs. we search for cat and return 20 videos. we also use an
     * "offset" value so that we do not receive the same 20 videos each time we query for more*/
     public String getURL() {
+
         Storage storage = new Storage(context);
         Uri.Builder builder;
         builder = new Uri.Builder();
