@@ -1,6 +1,7 @@
 package www.appawareinc.org.catparty;
 
 import android.content.Context;
+import android.content.Intent;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -24,22 +25,11 @@ public class Storage {
     }
 
     public void saveVideos(HashSet<String> id) {
-        try {
-            FileOutputStream fOut = context.openFileOutput("videos_seen.txt",
-                    Context.MODE_PRIVATE);
-            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-            try {
-                for (String item : id) {
-                    osw.write(item + "\n");
-                }
-                osw.flush();
-                osw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", "saveIDs");
+        serviceIntent.putExtra("IDs", id.toArray(new String[id.size()]));
+        context.startService(serviceIntent);
     }
 
     public HashSet<String> accessVideos() {
@@ -62,7 +52,7 @@ public class Storage {
 
     public void increaseOffset() {
         try {
-            int previous = accessOffset() + 20; //add the number of gifs we ask Giphy to return for each query
+            int previous = accessOffset() + 100; //add the number of gifs we ask Giphy to return for each query
             String savedNumber = String.valueOf(previous);
             FileOutputStream fOut = context.openFileOutput("starting_number.txt",
                     Context.MODE_PRIVATE);
@@ -102,22 +92,11 @@ public class Storage {
     }
 
     public void saveVIP(List<String> gifs) {
-        try {
 
-            FileOutputStream fOut = context.openFileOutput("vip_videos.txt",
-                    Context.MODE_PRIVATE); //mode append?
-            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-            try {
-                for (String piece : gifs)
-                    osw.write(piece + "\n");
-                osw.flush();
-                osw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", "saveVIP");
+        serviceIntent.putExtra("info", gifs.toArray(new String[gifs.size()]));
+        context.startService(serviceIntent);
     }
 
     public List<String> accessVIPs() {
@@ -133,7 +112,7 @@ public class Storage {
             }
             inBuff.close();
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
         return savedVIPs;
     }

@@ -1,17 +1,8 @@
 package www.appawareinc.org.catparty;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.provider.SyncStateContract;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +12,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
-import android.widget.VideoView;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import circleprogressbar.CircleProgressBar;
@@ -38,7 +21,6 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
     private Context context;
     private List<GifItem> gifs;
-    private Activity activity;
     private int lastPosition = -1;
     private boolean mainPartyAdapter = false;
     private boolean vipAdapter = false;
@@ -83,7 +65,6 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    if(url.contains("blank.html")) return;
                     loaded = true;
                     int screenMiddle = Math.round(TwoRooms.screenWidthDp * TwoRooms.densityMultiple / 2);
                     if (container.getLeft() < screenMiddle && container.getRight() > screenMiddle) {
@@ -183,10 +164,9 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
     /*constructor for this adapter. it needs context for certain methods and gifs so it doesn't
     * try to bind null elements into the viewholders*/
-    public ViewHolderAdapter(Context context, Activity activity) { //MainParty adapter
+    public ViewHolderAdapter(Context context) { //MainParty adapter
         this.context = context;
         gifs = new ArrayList<>();
-        this.activity = activity;
         mainPartyAdapter = true;
     }
 
@@ -248,12 +228,10 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         }
 
         /*gets new videos so we don't run out*/
-        if(mainPartyAdapter) getMoreVideosIfNeeded(position);
-    }
-
-    private void getMoreVideosIfNeeded(int position){
-        if (position == getItemCount() - 3) {
-            runTaskInBackground("buildURL");
+        if(mainPartyAdapter){
+            if (position == getItemCount() - 3) {
+                runTaskInBackground("buildURL");
+            }
         }
     }
 

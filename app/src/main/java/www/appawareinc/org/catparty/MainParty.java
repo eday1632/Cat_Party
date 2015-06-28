@@ -87,9 +87,7 @@ public class MainParty extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main_party, container, false);
 
-        Activity activity = getActivity();
-
-        mainPartyAdapter = new ViewHolderAdapter(context, activity);
+        mainPartyAdapter = new ViewHolderAdapter(context);
 
         final SnappyRecyclerView recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.main_recycler_view);
         recyclerView.setLayoutManager(getLayoutManager());
@@ -146,6 +144,7 @@ public class MainParty extends Fragment {
     }
 
     public static void saveVIPs(GifItem item){
+
         Storage storage = new Storage(context);
         List<String> savedGifs = storage.accessVIPs();
         savedGifs.add(item.getGuestAudition());
@@ -207,7 +206,7 @@ public class MainParty extends Fragment {
         }
     }
 
-    private void runTaskInBackground(String task){
+    private static void runTaskInBackground(String task){
         Intent serviceIntent = new Intent(context, MultiIntentService.class);
         serviceIntent.putExtra("controller", task);
         context.startService(serviceIntent);
@@ -219,6 +218,8 @@ public class MainParty extends Fragment {
 
         LocalBroadcastManager.getInstance(context).registerReceiver(privateReceiver,
                 new IntentFilter("buildURL"));
+        LocalBroadcastManager.getInstance(context).registerReceiver(privateReceiver,
+                new IntentFilter("accessVIPs"));
 
         if (isOnline() && firstTime) {
             firstTime = false;
@@ -230,23 +231,20 @@ public class MainParty extends Fragment {
         }
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver(context);
+        receiver = new NetworkReceiver(getActivity(), context);
         context.registerReceiver(receiver, filter);
 
         isActive = true;
-        SharedPreferences prefs = context.getSharedPreferences("instructions", 0);
-        if (prefs.getBoolean("dontshowagain", false)) { return; } //comment out for testing
-        //else
 
-            TextView swipeUp = (TextView) rootView.findViewById(R.id.swipeUp);
-            TextView swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
-            Animation fadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
-            fadeInOut.setAnimationListener(new MyAnimationListener(swipeUp, swipeDown));
-            swipeUp.startAnimation(fadeInOut);
+        runTaskInBackground("MainPartyNUX");
+    }
 
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("dontshowagain", true);
-            editor.apply();
+    public static void animateNUX(){
+        TextView swipeUp = (TextView) rootView.findViewById(R.id.swipeUp);
+        TextView swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
+        Animation fadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
+        fadeInOut.setAnimationListener(new MyAnimationListener(swipeUp, swipeDown));
+        swipeUp.startAnimation(fadeInOut);
     }
 
     public static void playGifsWhenVisible(){
@@ -403,7 +401,7 @@ public class MainParty extends Fragment {
     private BroadcastReceiver privateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            new VideoLoaderTask(context, getActivity()).execute(intent.getStringExtra("URL"));
+                new VideoLoaderTask(context, getActivity()).execute(intent.getStringExtra("URL"));
         }
     };
 

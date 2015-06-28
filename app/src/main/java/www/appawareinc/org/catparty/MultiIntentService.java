@@ -1,6 +1,7 @@
 package www.appawareinc.org.catparty;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -11,9 +12,12 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.HashSet;
 
 import inappbilling.BuildKey;
@@ -30,30 +34,71 @@ public class MultiIntentService extends IntentService {
         Bundle extras = intent.getExtras();
         String controller = extras.getString("controller", "");
 
-        if (controller.contentEquals("crashlytics")) {
+        if (controller.contentEquals("crashlytics")) { //for crashlytics; once per session
             Fabric.with(this, new Crashlytics());
 
-        } else if (controller.contentEquals("rateApp")) {
+        } else if (controller.contentEquals("rateApp")) { //for rating app; once per session
             AppRater.evaluateIfRatingCriteriaMet(getApplicationContext());
 
-        } else if (controller.contentEquals("increaseOffset")){
+        } else if (controller.contentEquals("saveVIP")) { //for saving one VIP; multiple per session
+
+            try {
+                FileOutputStream fOut = openFileOutput("vip_videos.txt",
+                        Context.MODE_PRIVATE); //mode append?
+                OutputStreamWriter osw = new OutputStreamWriter(fOut);
+                try {
+                    for (String piece : intent.getStringArrayExtra("info"))
+                        osw.write(piece + "\n");
+                    osw.flush();
+                    osw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        } else if (controller.contentEquals("saveIDs")) { //for saving all IDs; multiple per session
+
+            try {
+                FileOutputStream fOut = openFileOutput("videos_seen.txt",
+                        Context.MODE_PRIVATE);
+                OutputStreamWriter osw = new OutputStreamWriter(fOut);
+                try {
+                    for (String item : intent.getStringArrayExtra("IDs")) {
+                        osw.write(item + "\n");
+                    }
+                    osw.flush();
+                    osw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        } else if (controller.contentEquals("increaseOffset")){ //for increasing query offset; multiple per session
             Storage storage = new Storage(this);
             storage.increaseOffset();
 
-        } else if (controller.contentEquals("buildURL")){
+        } else if (controller.contentEquals("MainPartyNUX")){ //for increasing query offset; multiple per session
+            SharedPreferences prefs = getSharedPreferences("instructions", 0);
+            if (prefs.getBoolean("dontshowagain", false)) { return; } //comment out for testing
+            //else
+            MainParty.animateNUX();
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("dontshowagain", true);
+            editor.apply();
+
+        } else if (controller.contentEquals("buildURL")){ //builds query; multiple per session
             BuildURL url = new BuildURL(this);
-            Intent localIntent =
-                    new Intent("buildURL")
-                            .putExtra("URL", url.getURL());
+            Intent localIntent = new Intent("buildURL").putExtra("URL", url.getURL());
+
             // Broadcasts the Intent to receivers in this app.
             LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
 
-//        } else if (controller.contentEquals("saveIDs")){
-//            Storage storage = new Storage(this);
-//
-//            Log.d("xkcd", "increased query offset off the main thread!");
-
-        } else if (controller.contentEquals("unwanted")) {
+        } else if (controller.contentEquals("unwanted")) { //loads unwanted video list; once per session
             SharedPreferences prefs = getSharedPreferences("unwanted_gifs", 0);
             SharedPreferences.Editor editor = prefs.edit();
             if (prefs.getBoolean("dontloadagain", true)) {
@@ -92,12 +137,21 @@ public class MultiIntentService extends IntentService {
         return unwantedGifs;
     }
 
-    public final class Constants {
-        // Defines a custom Intent action
-        public static final String BROADCAST_ACTION =
-                "www.appawareinc.org.catparty.ACTION";
-        // Defines the key for the status "extra" in an Intent
-        public static final String EXTENDED_DATA_STATUS =
-                "www.appawareinc.org.catparty.STATUS";
+    private int getWashedResourceId(String image){
+        try {
+            return getResources().getIdentifier(image + "_washed", "drawable", getPackageName());
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    private int getResourceId(String image) {
+        try {
+            return getResources().getIdentifier(image, "drawable", getPackageName());
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 }

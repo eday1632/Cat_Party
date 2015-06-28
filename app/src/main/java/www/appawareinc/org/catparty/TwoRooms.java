@@ -126,7 +126,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
 
                 if (prefs.getInt("granted", 0) == 1 && position == 1) {
                     NoVIPAccess.catsShunYou();
-                    Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_SHORT).show();
                 } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
                     VIPParty.showInitialInstruction();
                 }

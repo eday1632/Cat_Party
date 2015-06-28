@@ -137,7 +137,6 @@ public class ChooseBackground extends Activity {
                 inSampleSize *= 2;
             }
         }
-
         return inSampleSize;
     }
 
@@ -195,6 +194,4 @@ public class ChooseBackground extends Activity {
 
         }
     }
-
-
 }

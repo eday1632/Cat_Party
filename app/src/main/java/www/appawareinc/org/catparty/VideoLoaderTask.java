@@ -46,12 +46,6 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         storage = new Storage(context);
     }
 
-    public VideoLoaderTask(Context context, Activity activity, Storage passedStorage) {
-        this.context = context;
-        this.activity = activity;
-        storage = passedStorage;
-    }
-
     @Override
     protected ArrayList<GifItem> doInBackground(String... url) {
         seenVideos = storage.accessVideos();
@@ -75,8 +69,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             logAnalyticsEvent(gifs.size());
         } else {
             Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
-            BuildURL buildURL = new BuildURL(context);
-            new VideoLoaderTask(context, activity, storage).execute(buildURL.getURL());
+            runTaskInBackground("buildURL");
         }
     }
 
@@ -85,8 +78,6 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         serviceIntent.putExtra("controller", task);
         context.startService(serviceIntent);
     }
-
-
 
     private void logAnalyticsEvent(int size){
         Tracker t = ((AnalyticsTool) activity.getApplication()).getTracker(

@@ -29,7 +29,7 @@ public class BuildURL {
                 .appendPath("search")
                 .appendQueryParameter("api_key", "l41lICEpoxH594Kly")
                 .appendQueryParameter("q", "cat")
-                .appendQueryParameter("limit", "20")
+                .appendQueryParameter("limit", "100")
                 .appendQueryParameter("offset", String.valueOf(storage.accessOffset()));
 
         return builder.build().toString();
