@@ -91,13 +91,6 @@ public class MultiIntentService extends IntentService {
             editor.putBoolean("dontshowagain", true);
             editor.apply();
 
-        } else if (controller.contentEquals("buildURL")){ //builds query; multiple per session
-            BuildURL url = new BuildURL(this);
-            Intent localIntent = new Intent("buildURL").putExtra("URL", url.getURL());
-
-            // Broadcasts the Intent to receivers in this app.
-            LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
-
         } else if (controller.contentEquals("unwanted")) { //loads unwanted video list; once per session
             SharedPreferences prefs = getSharedPreferences("unwanted_gifs", 0);
             SharedPreferences.Editor editor = prefs.edit();
@@ -135,23 +128,5 @@ public class MultiIntentService extends IntentService {
         bufferedReader.close();
 
         return unwantedGifs;
-    }
-
-    private int getWashedResourceId(String image){
-        try {
-            return getResources().getIdentifier(image + "_washed", "drawable", getPackageName());
-        } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    private int getResourceId(String image) {
-        try {
-            return getResources().getIdentifier(image, "drawable", getPackageName());
-        } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
-            return -1;
-        }
     }
 }

@@ -1,11 +1,14 @@
 package www.appawareinc.org.catparty;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -108,7 +111,7 @@ public class VIPParty extends Fragment {
                             public void onShareBySwipeUp(SnappyRecyclerView recyclerView, int shareThis) {
                                 logAnalyticsEvent("VIPParty", "Share");
                                 GifItem item = vipAdapter.returnItem(shareThis);
-                                sendGif(item.getGuestAudition());
+                                sendGif(item);
                             }
 
                             @Override /* !!!! THIS REMOVES, NOT SAVES, THE GIF !!!! */
@@ -303,7 +306,7 @@ public class VIPParty extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void sendGif(String url) {
+    public void sendGif(GifItem item) {
         LinearLayoutManager llm = (LinearLayoutManager) recyclerView.getLayoutManager();
         ViewHolderAdapter.SimpleViewHolder svh =
                 (ViewHolderAdapter.SimpleViewHolder) recyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());
@@ -348,10 +351,22 @@ public class VIPParty extends Fragment {
                 shamelessPlug = "\n - Beggars can't be cougars";
                 break;
         }
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(item.getGuestAudition()));
+        request.setTitle("Cat Party");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        }
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Cat_Party.gif");
+        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        manager.enqueue(request);
+        Toast.makeText(context, R.string.dl_complete, Toast.LENGTH_SHORT).show();
+
+        String link = "http://bit.ly/1LBDPse"; //TODO: link to play store when available
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/*");
-        intent.putExtra(Intent.EXTRA_SUBJECT,"Cat Party");
-        intent.putExtra(Intent.EXTRA_TEXT, "\n \n" + url + shamelessPlug);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Cat Party");
+        intent.putExtra(Intent.EXTRA_TEXT, "\n" + shamelessPlug + "\n" + link);
         context.startActivity(Intent.createChooser(intent, "Send"));
     }
 

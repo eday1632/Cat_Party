@@ -2,6 +2,7 @@ package www.appawareinc.org.catparty;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -52,8 +53,9 @@ public class Storage {
 
     public void increaseOffset() {
         try {
-            int previous = accessOffset() + 100; //add the number of gifs we ask Giphy to return for each query
+            int previous = accessOffset() + 20; //add the number of gifs we ask Giphy to return for each query
             String savedNumber = String.valueOf(previous);
+            Log.d("xkcd", "current offset: "+savedNumber);
             FileOutputStream fOut = context.openFileOutput("starting_number.txt",
                     Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fOut);

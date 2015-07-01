@@ -1,6 +1,7 @@
 package www.appawareinc.org.catparty;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,9 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +32,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
 import java.util.List;
 import java.util.Random;
 
@@ -87,7 +91,7 @@ public class MainParty extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main_party, container, false);
 
-        mainPartyAdapter = new ViewHolderAdapter(context);
+        mainPartyAdapter = new ViewHolderAdapter(context, getActivity());
 
         final SnappyRecyclerView recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.main_recycler_view);
         recyclerView.setLayoutManager(getLayoutManager());
@@ -105,7 +109,7 @@ public class MainParty extends Fragment {
                             public void onShareBySwipeUp(SnappyRecyclerView recyclerView, int shareThis) {
                                 logAnalyticsEvent("MainParty", "Share");
                                 GifItem item = mainPartyAdapter.returnItem(shareThis);
-                                sendGif(item.getGuestAudition(), recyclerView);
+                                sendGif(item, recyclerView);
                             }
 
                             @Override
@@ -216,23 +220,21 @@ public class MainParty extends Fragment {
     public void onResume() {
         super.onResume();
 
-        LocalBroadcastManager.getInstance(context).registerReceiver(privateReceiver,
-                new IntentFilter("buildURL"));
-        LocalBroadcastManager.getInstance(context).registerReceiver(privateReceiver,
-                new IntentFilter("accessVIPs"));
-
         if (isOnline() && firstTime) {
             firstTime = false;
             rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            runTaskInBackground("buildURL");
+            BuildURL url = new BuildURL(context);
+            new VideoLoaderTask(context, getActivity()).execute(url.getURL());
         } else if (!isOnline()) {
             rootView.findViewById(R.id.main_recycler_view).setVisibility(View.INVISIBLE);
             rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
         }
 
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver(getActivity(), context);
-        context.registerReceiver(receiver, filter);
+        if(receiver == null) {
+            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            receiver = new NetworkReceiver(getActivity(), context);
+            context.registerReceiver(receiver, filter);
+        }
 
         isActive = true;
 
@@ -283,7 +285,7 @@ public class MainParty extends Fragment {
 
     /*sendGif takes the url of a gif and returns a share intent that activates the share function
     * in Android. A pop-down menu appears and shows the apps the user can use to share the gif*/
-    public void sendGif(String url, SnappyRecyclerView recyclerView) {
+    public void sendGif(GifItem item, SnappyRecyclerView recyclerView) {
         LinearLayoutManager llm = (LinearLayoutManager) recyclerView.getLayoutManager();
         ViewHolderAdapter.SimpleViewHolder svh =
                 (ViewHolderAdapter.SimpleViewHolder) recyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());
@@ -328,11 +330,23 @@ public class MainParty extends Fragment {
                 shamelessPlug = "\n - Beggars can't be cougars";
                 break;
         }
-        String link = "market://details?id=rebuild.catpartyprotected"; //TODO: link to play store when available
+
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(item.getGuestAudition()));
+        request.setTitle("Cat Party");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        }
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Cat_Party.gif");
+        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        manager.enqueue(request);
+        Toast.makeText(context, R.string.dl_complete, Toast.LENGTH_SHORT).show();
+
+        String link = "http://bit.ly/1LBDPse"; //TODO: link to play store when available
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/*");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Cat Party");
-        intent.putExtra(Intent.EXTRA_TEXT, "\n \n" + url + shamelessPlug);
+        intent.putExtra(Intent.EXTRA_TEXT, "\n" + shamelessPlug + "\n" + link);
         context.startActivity(Intent.createChooser(intent, "Send"));
     }
 
@@ -398,13 +412,6 @@ public class MainParty extends Fragment {
         }
     }
 
-    private BroadcastReceiver privateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-                new VideoLoaderTask(context, getActivity()).execute(intent.getStringExtra("URL"));
-        }
-    };
-
     @Override
     public void onStop() {
         super.onStop();
@@ -412,10 +419,6 @@ public class MainParty extends Fragment {
         dontPlayGifsWhenOffscreen();
 
         try {
-            if(privateReceiver != null){
-                context.unregisterReceiver(privateReceiver);
-                privateReceiver = null;
-            }
             if(receiver != null) {
                 context.unregisterReceiver(receiver);
                 receiver = null;
