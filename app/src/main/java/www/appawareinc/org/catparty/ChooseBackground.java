@@ -1,6 +1,7 @@
 package www.appawareinc.org.catparty;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -76,10 +77,7 @@ public class ChooseBackground extends Activity {
                     @Override
                     public void onClick(View v) {
                         TwoRooms.newBackgroundChosen(IDs[myPosition]);
-                        SharedPreferences prefs = getSharedPreferences(getString(R.string.pref_background), MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString(getString(R.string.pref_background), IDs[myPosition]);
-                        editor.apply();
+                        runTaskInBackground("backgroundChange", IDs[myPosition]);
                         logAnalyticsEvent(IDs[myPosition]);
                         finish();
                     }
@@ -116,6 +114,13 @@ public class ChooseBackground extends Activity {
         public int getItemCount() {
             return titles.length;
         }
+    }
+
+    private void runTaskInBackground(String task, String description){
+        Intent serviceIntent = new Intent(this, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        serviceIntent.putExtra("image", description);
+        startService(serviceIntent);
     }
 
     public static int calculateInSampleSize(
@@ -158,13 +163,17 @@ public class ChooseBackground extends Activity {
 
 
     private void logAnalyticsEvent(String backgroundImage){
-        Tracker t = ((AnalyticsTool) getApplication()).getTracker(
-                AnalyticsTool.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory("Background")
-                .setAction(backgroundImage)
-                .setValue(1)
-                .build());
+        try {
+            Tracker t = ((AnalyticsTool) getApplication()).getTracker(
+                    AnalyticsTool.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory("Background")
+                    .setAction(backgroundImage)
+                    .setValue(1)
+                    .build());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     private int getResourceId(String image){

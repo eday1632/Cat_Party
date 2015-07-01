@@ -13,6 +13,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -237,12 +243,6 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
                 new VideoLoaderTask(context, activity).execute(url.getURL());
             }
         }
-    }
-
-    private void runTaskInBackground(String task){
-        Intent serviceIntent = new Intent(context, MultiIntentService.class);
-        serviceIntent.putExtra("controller", task);
-        context.startService(serviceIntent);
     }
 
     /* If the bound view wasn't previously displayed on screen, it's animated*/

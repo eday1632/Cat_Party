@@ -33,6 +33,7 @@ import com.google.android.gms.analytics.Tracker;
 import org.w3c.dom.Text;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -149,13 +150,18 @@ public class MainParty extends Fragment {
 
     public static void saveVIPs(GifItem item){
 
-        Storage storage = new Storage(context);
-        List<String> savedGifs = storage.accessVIPs();
-        savedGifs.add(item.getGuestAudition());
-        savedGifs.add(item.getGuestHeight());
-        savedGifs.add(item.getGuestWidth());
-        savedGifs.add(item.getGuestID());
-        storage.saveVIP(savedGifs);
+        String[] gifToSave = new String [4];
+        gifToSave[0] = item.getGuestAudition();
+        gifToSave[1] = item.getGuestHeight();
+        gifToSave[2] = item.getGuestWidth();
+        gifToSave[3] = item.getGuestID();
+
+        System.out.println(gifToSave[3]);
+
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", "saveAllVIPs");
+        serviceIntent.putExtra("gif", gifToSave);
+        context.startService(serviceIntent);
     }
 
     public static void hideProgressSpinner(){

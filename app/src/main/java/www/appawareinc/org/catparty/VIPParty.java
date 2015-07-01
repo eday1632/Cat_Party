@@ -205,13 +205,17 @@ public class VIPParty extends Fragment {
     }
 
     private void logAnalyticsEvent(String category, String action){
-        Tracker t = ((AnalyticsTool) getActivity().getApplication()).getTracker(
-                AnalyticsTool.TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory(category)
-                .setAction(action)
-                .setValue(1)
-                .build());
+        try {
+            Tracker t = ((AnalyticsTool) getActivity().getApplication()).getTracker(
+                    AnalyticsTool.TrackerName.APP_TRACKER);
+            t.send(new HitBuilders.EventBuilder()
+                    .setCategory(category)
+                    .setAction(action)
+                    .setValue(1)
+                    .build());
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     public static void setSeekBarMax(){
@@ -253,16 +257,19 @@ public class VIPParty extends Fragment {
         }
     }
 
+    private static void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        context.startService(serviceIntent);
+    }
+
     public static void showInitialInstruction(){
         TextView swipeDown = (TextView) rootView.findViewById(R.id.swipeDown);
         Animation animationFadeInOut = AnimationUtils.loadAnimation(context, R.anim.fade_in_out);
         animationFadeInOut.setAnimationListener(new MyAnimationListener(swipeDown));
         swipeDown.startAnimation(animationFadeInOut);
 
-        SharedPreferences prefs = context.getSharedPreferences("vip_instructions", 0);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("dontshowagain", false);
-        editor.apply();
+        runTaskInBackground("vipInstructions");
     }
 
     private static class MyAnimationListener implements Animation.AnimationListener {

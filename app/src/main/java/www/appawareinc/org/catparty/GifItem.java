@@ -5,59 +5,58 @@ package www.appawareinc.org.catparty;
 
 //TODO: Add a height parameter so we can show full screen gifs
 public class GifItem {
-    private String guestAudition;
-    private String guestHeight;
-    private String guestWidth;
-    private String guestID;
+    private String [] guestInfo;
 
     /*constructor for initializing a complete GifItem*/
     public GifItem(String audition, String height, String width, String ID) {
         super();
-        guestAudition = audition;
-        guestHeight = height;
-        guestWidth = width;
-        guestID = ID;
+        guestInfo = new String [4];
+        guestInfo[0] = audition;
+        guestInfo[1] = height;
+        guestInfo[2] = width;
+        guestInfo[3] = ID;
     }
 
     /*constructor for initializing a null GifItem*/
     public GifItem() {
-        guestAudition = "";
-        guestHeight = "";
-        guestWidth = "";
-        guestID = "";
+        guestInfo = new String [4];
+        guestInfo[0] = "";
+        guestInfo[1] = "";
+        guestInfo[2] = "";
+        guestInfo[3] = "";
     }
 
     /*getters and setters for the state variables*/
     public String getGuestAudition() {
-        return guestAudition;
+        return guestInfo[0];
     }
 
     public void setGuestAudition(String audition) {
-        guestAudition = audition;
+        guestInfo[0] = audition;
     }
 
     public String getGuestHeight() {
-        return guestHeight;
+        return guestInfo[1];
     }
 
     public void setGuestHeight(String height) {
-        guestHeight = height;
+        guestInfo[1] = height;
     }
 
     public String getGuestWidth() {
-        return guestWidth;
+        return guestInfo[2];
     }
 
     public void setGuestWidth(String width) {
-        guestWidth = width;
+        guestInfo[2] = width;
     }
 
     public String getGuestID() {
-        return guestID;
+        return guestInfo[3];
     }
 
     public void setGuestID(String ID) {
-        guestID = ID;
+        guestInfo[3] = ID;
     }
 
 }

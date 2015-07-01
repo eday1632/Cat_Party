@@ -120,19 +120,9 @@ public class Storage {
     }
 
     public void eraseVIPs() {
-        try {
-            FileOutputStream fOut = context.openFileOutput("vip_videos.txt",
-                    Context.MODE_PRIVATE);
-            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-            try {
-                osw.write("");
-                osw.flush();
-                osw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", "eraseVIPs");
+        context.startService(serviceIntent);
     }
 }
