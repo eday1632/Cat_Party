@@ -239,10 +239,15 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
         /*gets new videos so we don't run out*/
         if(mainPartyAdapter){
             if (position == getItemCount() - 3) {
-                BuildURL url = new BuildURL(context);
-                new VideoLoaderTask(context, activity).execute(url.getURL());
+                runTaskInBackground("getGifs");
             }
         }
+    }
+
+    private void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        context.startService(serviceIntent);
     }
 
     /* If the bound view wasn't previously displayed on screen, it's animated*/

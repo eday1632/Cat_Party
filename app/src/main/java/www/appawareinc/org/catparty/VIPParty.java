@@ -364,10 +364,10 @@ public class VIPParty extends Fragment {
             request.allowScanningByMediaScanner();
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         }
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Cat_Party.gif");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getGuestID()+".gif");
         DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         manager.enqueue(request);
-        Toast.makeText(context, R.string.dl_complete, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.downloading, Toast.LENGTH_SHORT).show();
 
         String link = "http://bit.ly/1LBDPse"; //TODO: link to play store when available
         Intent intent = new Intent(Intent.ACTION_SEND);

@@ -90,6 +90,7 @@ public class MainParty extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+
         rootView = inflater.inflate(R.layout.fragment_main_party, container, false);
 
         mainPartyAdapter = new ViewHolderAdapter(context, getActivity());
@@ -229,8 +230,7 @@ public class MainParty extends Fragment {
         if (isOnline() && firstTime) {
             firstTime = false;
             rootView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            BuildURL url = new BuildURL(context);
-            new VideoLoaderTask(context, getActivity()).execute(url.getURL());
+            runTaskInBackground("getGifs");
         } else if (!isOnline()) {
             rootView.findViewById(R.id.main_recycler_view).setVisibility(View.INVISIBLE);
             rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
@@ -238,7 +238,7 @@ public class MainParty extends Fragment {
 
         if(receiver == null) {
             IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            receiver = new NetworkReceiver(getActivity(), context);
+            receiver = new NetworkReceiver(context);
             context.registerReceiver(receiver, filter);
         }
 
@@ -273,7 +273,6 @@ public class MainParty extends Fragment {
             visibleRecyclerView.removeAllViewsInLayout();
         }
     }
-
 
     /*Method automatically created by Android Studio. Relates to the onButtonPressed method above, but
     * it's unclear how*/
@@ -343,10 +342,12 @@ public class MainParty extends Fragment {
             request.allowScanningByMediaScanner();
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         }
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Cat_Party.gif");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getGuestID()+".gif");
         DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         manager.enqueue(request);
-        Toast.makeText(context, R.string.dl_complete, Toast.LENGTH_SHORT).show();
+
+
+        Toast.makeText(context, R.string.downloading, Toast.LENGTH_SHORT).show();
 
         String link = "http://bit.ly/1LBDPse"; //TODO: link to play store when available
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -419,18 +420,19 @@ public class MainParty extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-
-        dontPlayGifsWhenOffscreen();
-
+    public void onPause() {
         try {
-            if(receiver != null) {
-                context.unregisterReceiver(receiver);
-                receiver = null;
-            }
+            context.unregisterReceiver(receiver);
+            receiver = null;
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        dontPlayGifsWhenOffscreen();
+        super.onStop();
     }
 }

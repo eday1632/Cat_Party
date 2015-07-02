@@ -40,7 +40,12 @@ public class MultiIntentService extends IntentService {
         if (controller.contentEquals("crashlytics")) { //for crashlytics; once per session
             Fabric.with(this, new Crashlytics());
 
-        } else if (controller.contentEquals("clearData")) { //for rating app; once per session
+        } else if (controller.contentEquals("getGifs")) { //multiple per session
+            BuildURL url = new BuildURL(this);
+            Intent localIntent = new Intent("URL").putExtra("URL", url.getURL());
+            LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+
+        } else if (controller.contentEquals("clearData")) { //once per session
             clearApplicationData(this);
 
         } else if (controller.contentEquals("rateApp")) { //for rating app; once per session

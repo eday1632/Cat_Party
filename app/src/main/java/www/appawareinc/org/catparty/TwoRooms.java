@@ -1,8 +1,10 @@
 package www.appawareinc.org.catparty;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -18,6 +20,7 @@ import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -49,6 +52,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     private static StickyViewPager mViewPager;
     private static String background;
     private boolean notFirst = false;
+    private ResponseReceiver responseReceiver;
     private static boolean notYetExecuted = true;
     private static boolean mainPartyWasLastVisible = true;
     public static float densityMultiple;
@@ -164,6 +168,17 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
         });
     }
 
+    private class ResponseReceiver extends BroadcastReceiver {
+        private ResponseReceiver() {
+        }
+
+        // Called when the BroadcastReceiver gets an Intent it's registered to receive
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            new VideoLoaderTask(context, getParent()).execute(extras.getString("URL"));
+        }
+    }
+
     private void runTaskInBackground(String task){
         Intent serviceIntent = new Intent(this, MultiIntentService.class);
         serviceIntent.putExtra("controller", task);
@@ -242,7 +257,6 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
-
     private int getWashedResourceId(String image){
         try {
             return getResources().getIdentifier(image + "_washed", "drawable", getPackageName());
@@ -280,6 +294,11 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     protected void onResume() {
         super.onResume();
 
+        IntentFilter mStatusIntentFilter = new IntentFilter("URL");
+        mStatusIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        responseReceiver = new ResponseReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(responseReceiver, mStatusIntentFilter);
+
         if(mainPartyWasLastVisible && MainParty.isActive){
             MainParty.playGifsWhenVisible();
         } else if (!mainPartyWasLastVisible && VIPParty.isActive){
@@ -294,6 +313,15 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
         } else {
             setBackgroundImage(getWashedResourceId(background), getResources());
         }
+    }
+
+    @Override
+    protected void onPause() {
+        if (responseReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(responseReceiver);
+            responseReceiver = null;
+        }
+        super.onPause();
     }
 
     @Override
