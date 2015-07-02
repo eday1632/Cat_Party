@@ -121,16 +121,15 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                 }
                 notFirst = true;
 
-                SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
-                SharedPreferences instructions = context.getSharedPreferences("vip_instructions", 0);
+                SharedPreferences prefs = getSharedPreferences("vip_access", 0);
+                SharedPreferences instructions = getSharedPreferences("vip_instructions", 0);
 
                 if (prefs.getInt("granted", 0) == 1 && position == 1) {
                     NoVIPAccess.catsShunYou();
                     Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_SHORT).show();
                 } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
                     VIPParty.showInitialInstruction();
-                }
-            }
+                }            }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -414,36 +413,6 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     protected void onStop() {
         super.onStop();
 
-        clearApplicationData(this);
-    }
-
-    public static void clearApplicationData(Context context) {
-        File cache = context.getCacheDir();
-        File appDir = new File(cache.getParent());
-        if (appDir.exists()) {
-            String[] children = appDir.list();
-            for (String s : children) {
-                File f = new File(appDir, s);
-                if(f.getAbsolutePath().contains("files") ||
-                        f.getAbsolutePath().contains("shared_prefs")){
-                    //do nothing
-                } else {
-                    deleteDir(f);
-                }
-            }
-        }
-    }
-
-    private static boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        return dir.delete();
+        runTaskInBackground("clearData");
     }
 }

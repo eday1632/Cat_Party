@@ -69,7 +69,7 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             logAnalyticsEvent(gifs.size());
         } else {
             Toast.makeText(context, R.string.trouble_receiving_gifs, Toast.LENGTH_SHORT).show();
-            runTaskInBackground("buildURL");
+            Log.d("xkcd", "gifs are null, so we're redoing the query");
         }
     }
 
@@ -80,13 +80,17 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
     }
 
     private void logAnalyticsEvent(int size){
-        Tracker t = ((AnalyticsTool) activity.getApplication()).getTracker(
-                AnalyticsTool.TrackerName.APP_TRACKER);
+        try {
+            Tracker t = ((AnalyticsTool) activity.getApplication()).getTracker(
+                    AnalyticsTool.TrackerName.APP_TRACKER);
             t.send(new HitBuilders.EventBuilder()
                     .setCategory("VideoLoaderTask")
                     .setAction("Retrieved gifs")
                     .setValue(size)
                     .build());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     String run(String url) throws IOException {
@@ -94,7 +98,6 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-
         Response response = client.newCall(request).execute();
         return response.body().string();
     }
@@ -106,15 +109,17 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
         try {
             String rawResponse = run(output);
             if(rawResponse == null){
-                return URLs = null; //exit the process here if we didn't get anything back from Giphy
+                URLs = null;
+                return URLs; //exit the process here if we didn't get anything back from Giphy
             }
             JSONParser parser = new JSONParser();
-            JSONObject response = null;
+            JSONObject response;
             try {
                 response = (JSONObject) parser.parse(rawResponse);
             } catch (ParseException pe) {
                 pe.printStackTrace();
-                return URLs = null; //also exit if we can't parse what was returned
+                URLs = null;
+                return URLs; //also exit if we can't parse what was returned
             }
 
             returnedVideos = (JSONArray) response.get("data");
@@ -201,7 +206,8 @@ public class VideoLoaderTask extends AsyncTask<String, Integer, ArrayList<GifIte
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return URLs = null;
+            URLs = null;
+            return URLs;
         }
         return URLs;
     }

@@ -30,15 +30,27 @@ public class RippleBackground extends RelativeLayout{
 
     public RippleBackground(Context context) {
         super(context);
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        animatorSet = new AnimatorSet();
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
     public RippleBackground(Context context, AttributeSet attrs) {
         super(context, attrs);
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        animatorSet = new AnimatorSet();
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
         init(context, attrs);
     }
 
     public RippleBackground(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        animatorSet = new AnimatorSet();
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
         init(context, attrs);
     }
 
@@ -61,8 +73,6 @@ public class RippleBackground extends RelativeLayout{
         typedArray.recycle();
         int rippleDelay=rippleDurationTime/rippleAmount;
 
-        paint = new Paint();
-        paint.setAntiAlias(true);
         if(rippleType==DEFAULT_FILL_TYPE){
             rippleStrokeWidth=0;
             paint.setStyle(Paint.Style.FILL);
@@ -73,8 +83,6 @@ public class RippleBackground extends RelativeLayout{
         LayoutParams rippleParams=new LayoutParams((int)(2*(rippleRadius+rippleStrokeWidth)),(int)(2*(rippleRadius+rippleStrokeWidth)));
         rippleParams.addRule(CENTER_IN_PARENT, TRUE);
 
-        animatorSet = new AnimatorSet();
-        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
         ArrayList<Animator> animatorList=new ArrayList<>();
 
         for(int i=0;i<rippleAmount;i++){

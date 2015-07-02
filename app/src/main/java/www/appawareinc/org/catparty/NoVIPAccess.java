@@ -67,10 +67,7 @@ public class NoVIPAccess extends Fragment {
 
         rootView = inflater.inflate(R.layout.no_vip_access, container, false);
 
-        SharedPreferences prefs = context.getSharedPreferences("vip_access", 0);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("granted", 1);
-        editor.apply();
+        runTaskInBackground("initializeVIP");
 
         Button purchase = (Button) rootView.findViewById(R.id.purchase);
         purchase.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +108,12 @@ public class NoVIPAccess extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void runTaskInBackground(String task){
+        Intent serviceIntent = new Intent(context, MultiIntentService.class);
+        serviceIntent.putExtra("controller", task);
+        context.startService(serviceIntent);
     }
 
     public void restartForVIPAccess(){
