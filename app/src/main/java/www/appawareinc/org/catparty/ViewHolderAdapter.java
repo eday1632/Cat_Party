@@ -1,6 +1,5 @@
 package www.appawareinc.org.catparty;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -14,11 +13,6 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +25,6 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
     private int lastPosition = -1;
     private boolean mainPartyAdapter = false;
     private boolean vipAdapter = false;
-    private Activity activity;
 
     /*SimpleViewHolder is the whole item that contains the gif, the colorful background, and anything
     * else that goes in that frame. We define the links between the XML and the Java file and
@@ -172,11 +165,10 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Si
 
     /*constructor for this adapter. it needs context for certain methods and gifs so it doesn't
     * try to bind null elements into the viewholders*/
-    public ViewHolderAdapter(Context context, Activity activity) { //MainParty adapter
+    public ViewHolderAdapter(Context context) { //MainParty adapter
         this.context = context;
         gifs = new ArrayList<>();
         mainPartyAdapter = true;
-        this.activity = activity;
     }
 
     public ViewHolderAdapter(Context context, List<GifItem> list) { //VIP adapter

@@ -11,7 +11,7 @@ import android.widget.Button;
 
 public class AppRater {
 
-    private final static int DAYS_UNTIL_PROMPT = 3; //TODO: 3 days for production, 3 launches
+    private final static int DAYS_UNTIL_PROMPT = 0; //TODO: 3 days for production, 3 launches
     private final static int LAUNCHES_UNTIL_PROMPT = 3;
 
     public static void evaluateIfRatingCriteriaMet(Context mContext) {

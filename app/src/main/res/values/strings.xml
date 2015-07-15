@@ -24,10 +24,11 @@
     <string name="pref_background">cat_party_background_image</string>
     <string name="guest_list">\"Guest list only\"</string>
     <string name="set_background">Set background</string>
+    <string name="facebook_app_id">695646640579532</string>
     <string name="thanks">Special thanks:</string>
     <string name="special_thanks">Cat Party could not have become what it is without the following: gifs from Giphy, purpose from Panthera, design from Lizzy, product advice from Henry, business advice from Beau, legal advice from Julian, code from Shafeeq, more code from the Android Open Source Project, fancy progress spinners from Android Arsenal, coursework from the Yale School of Management and Department of Computer Science, and the support and patience of many friends. Thanks!</string>
     <string name="panthera">www.panthera.org</string>
-    <string name="support">support@appawareinc.org</string>
+    <string name="support">support\@appawareinc.org</string>
     <string name="ask_party">How\'s the Party?</string>
     <string name="okay">OK!</string>
     <string name="about_cp">About Cat Party:</string>

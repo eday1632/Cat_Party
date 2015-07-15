@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +83,6 @@ public class NoVIPAccess extends Fragment {
 
         BuildKey key = new BuildKey();
         String base64EncodedPublicKey = key.getKey();
-
 
         // Create the helper, passing it our context and the public key to verify signatures with
         mHelper = new IabHelper(context, base64EncodedPublicKey);

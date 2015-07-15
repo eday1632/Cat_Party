@@ -13,7 +13,6 @@
             <shape android:shape="line" >
                 <stroke android:width="2dp"
                     android:color="@color/cpblue"/>
-
             </shape>
         </clip>
     </item>

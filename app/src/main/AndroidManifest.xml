@@ -17,6 +17,8 @@
     <screen android:screenDensity="480" android:screenSize="xlarge"/>
 </compatible-screens>
 
+    <supports-screens android:xlargeScreens="true" />
+
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="com.android.vending.BILLING" />
@@ -35,6 +37,8 @@
 
     <meta-data android:name="com.google.android.gms.version"
         android:value="@integer/google_play_services_version" />
+
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
 
     <service android:name="com.google.android.gms.analytics.AnalyticsService"
         android:enabled="true"

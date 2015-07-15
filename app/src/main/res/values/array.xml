@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="image">
+    <string-array name="image"
+        translatable="false">
         <item>Black Fur</item>
         <item>Orange Fur</item>
         <item>Spotted Fur</item>
@@ -17,7 +18,8 @@
         <item>Tea Party</item>
     </string-array>
 
-    <string-array name="backgroundImage">
+    <string-array name="backgroundImage"
+        translatable="false">
         <item>black_fur</item>
         <item>orange_fur</item>
         <item>gray_fur</item>

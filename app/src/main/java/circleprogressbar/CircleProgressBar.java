@@ -98,7 +98,7 @@ public class CircleProgressBar extends ImageView {
         mProgressDrawable.setBackgroundColor(mBackGroundColor);
         mProgressDrawable.setSizeParameters(mDiameter, mDiameter,
                 mInnerRadius <= 0 ? (mDiameter - mProgressStokeWidth * 2) / 4 : mInnerRadius,
-                mProgressStokeWidth, mProgressStokeWidth * 4, mProgressStokeWidth * 2);
+                mProgressStokeWidth);
 
         super.setImageDrawable(null);
         super.setImageDrawable(mProgressDrawable);

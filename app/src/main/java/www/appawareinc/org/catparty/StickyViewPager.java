@@ -5,9 +5,6 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-/**
- * Created by esd35 on 5/12/2015.
- */
 public class StickyViewPager extends ViewPager {
 
     public StickyViewPager(Context context) {

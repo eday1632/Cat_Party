@@ -23,14 +23,14 @@
         android:background="@drawable/poweredby_giphy"
         android:layout_width="100dp"
         android:layout_height="27dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/margin8"
         android:layout_gravity="right|top" />
 
     <ImageView
         android:background="@drawable/panthera_logo"
         android:layout_width="92dp"
         android:layout_height="48dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/margin8"
         android:layout_gravity="left|top" />
 
     <TextView

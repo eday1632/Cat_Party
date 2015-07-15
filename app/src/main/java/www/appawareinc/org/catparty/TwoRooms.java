@@ -1,5 +1,6 @@
 package www.appawareinc.org.catparty;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,7 +17,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -25,7 +25,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +38,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.File;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,32 +59,25 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     public static float densityMultiple;
     public static int screenWidthDp;
     public static int screenHeightDp;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build());
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build());
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
         setContentView(R.layout.activity_two_rooms);
         context = this;
+        activity = this;
+        AppRater.evaluateIfRatingCriteriaMet(this);
         screenDimensions();
-
-        runTaskInBackground("rateApp");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setLogo(R.drawable.logo_noedge);
 
-        final RippleBackground rippleBackground = (RippleBackground)findViewById(R.id.content);
+        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         List<String> list = new ArrayList<>();
@@ -133,7 +127,8 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
                     Toast.makeText(getBaseContext(), R.string.guest_list, Toast.LENGTH_SHORT).show();
                 } else if (instructions.getBoolean("dontshowagain", true) && position == 1) {
                     VIPParty.showInitialInstruction();
-                }            }
+                }
+            }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -175,7 +170,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
         // Called when the BroadcastReceiver gets an Intent it's registered to receive
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
-            new VideoLoaderTask(context, getParent()).execute(extras.getString("URL"));
+            new VideoLoaderTask(context, activity).execute(extras.getString("URL"));
         }
     }
 
@@ -293,6 +288,7 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
     @Override
     protected void onResume() {
         super.onResume();
+        AppEventsLogger.activateApp(getApplicationContext());
 
         IntentFilter mStatusIntentFilter = new IntentFilter("URL");
         mStatusIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
@@ -317,6 +313,8 @@ public class TwoRooms extends ActionBarActivity implements MainParty.OnFragmentI
 
     @Override
     protected void onPause() {
+        AppEventsLogger.deactivateApp(getApplicationContext());
+
         if (responseReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(responseReceiver);
             responseReceiver = null;

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +25,6 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import analytics.AnalyticsTool;
 
@@ -177,13 +174,16 @@ public class VIPParty extends Fragment {
 
     public static void playGifsWhenVisible(){
         Storage storage = new Storage(context);
-        List<GifItem> gifItems = gifListRebuilder(storage.accessVIPs());
-        vipAdapter = new ViewHolderAdapter(context, gifItems);
+        vipAdapter = new ViewHolderAdapter(context, gifListRebuilder(storage.accessVIPs()));
 
         SnappyRecyclerView recyclerView = (SnappyRecyclerView) rootView.findViewById(R.id.vip_recycler_view);
         recyclerView.requestLayout();
         recyclerView.scrollToPosition(returnPosition);
         recyclerView.setAdapter(vipAdapter);
+        ViewHolderAdapter.SimpleViewHolder svh =
+                (ViewHolderAdapter.SimpleViewHolder)
+                        recyclerView.findViewHolderForPosition(returnPosition);
+        if(svh != null) svh.showWebView();
         setSeekBarMax();
     }
 
@@ -193,14 +193,14 @@ public class VIPParty extends Fragment {
         ViewHolderAdapter.SimpleViewHolder svh =
                 (ViewHolderAdapter.SimpleViewHolder) recyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());
         if(svh != null) {
-            returnPosition = svh.getPosition();
+            returnPosition = svh.getPosition() + 1;
             recyclerView.removeAllViewsInLayout();
             vipAdapter = null;
         }
     }
 
     private void confirmDeleteOnce(){
-        if(confirmDelete)Toast.makeText(context, R.string.bounced, Toast.LENGTH_LONG).show();
+        if(confirmDelete) Toast.makeText(context, R.string.bounced, Toast.LENGTH_LONG).show();
         confirmDelete = false;
     }
 
@@ -309,7 +309,6 @@ public class VIPParty extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -318,46 +317,9 @@ public class VIPParty extends Fragment {
         ViewHolderAdapter.SimpleViewHolder svh =
                 (ViewHolderAdapter.SimpleViewHolder) recyclerView.findViewHolderForPosition(llm.findFirstVisibleItemPosition());
         if(svh != null) {
-            returnPosition = svh.getPosition();
+            returnPosition = svh.getPosition() + 1;
         }
-        String shamelessPlug = "";
-        Random random = new Random();
-        int chosen = random.nextInt(10);
-        switch (chosen) {
-            case 0:
-                shamelessPlug = "\n - Let's Cat Party!";
-                break;
-            case 1:
-                shamelessPlug = "\n - Wanna Cat Party?";
-                break;
-            case 2:
-                shamelessPlug = "\n - Cheetahs need us!";
-                break;
-            case 3:
-                shamelessPlug = "\n - Make love AND jaguar";
-                break;
-            case 4:
-                shamelessPlug = "\n - Smitten for kittens?";
-                break;
-            case 5:
-                shamelessPlug = "\n - Doesn't cost a lot to help the ocelot!";
-                break;
-            case 6:
-                shamelessPlug = "\n - Unjinx the lynx!";
-                break;
-            case 7:
-                shamelessPlug = "\n - Pass the hat for the bobcat!";
-                break;
-            case 8:
-                shamelessPlug = "\n - Start tryin' for the lion!";
-                break;
-            case 9:
-                shamelessPlug = "\n - Be shepard to the leopard";
-                break;
-            case 10:
-                shamelessPlug = "\n - Beggars can't be cougars";
-                break;
-        }
+
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(item.getGuestAudition()));
         request.setTitle("Cat Party");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -367,17 +329,20 @@ public class VIPParty extends Fragment {
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getGuestID()+".gif");
         DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         manager.enqueue(request);
+
         Toast.makeText(context, R.string.downloading, Toast.LENGTH_SHORT).show();
 
-        String link = "http://bit.ly/1LBDPse"; //TODO: link to play store when available
+        String link = "http://play.google.com/store/apps/details?id=www.appawareinc.org.catparty";
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/*");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Cat Party");
-        intent.putExtra(Intent.EXTRA_TEXT, "\n" + shamelessPlug + "\n" + link);
+        intent.putExtra(Intent.EXTRA_TEXT, "\n" + link);
+
         context.startActivity(Intent.createChooser(intent, "Send"));
     }
 
     public static List<GifItem> gifListRebuilder(List<String> list) {
+
         List<GifItem> gifs = new ArrayList<>();
         while (!list.isEmpty()) {
             GifItem item = new GifItem();
